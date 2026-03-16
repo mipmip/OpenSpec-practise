@@ -123,7 +123,7 @@ python -m uvicorn src.api.server:app --reload
 
 1. **入门**: 阅读 [OpenSpec使用手册](docs/OpenSpec使用手册.md)，了解 OpenSpec 的基本概念和使用方法。
 2. **实践**: 阅读 [OpenSpec 实战指南](docs/openspec-practical-guide.md)，理解如何在实际项目中应用。
-3. **深入**: 阅读 OpenSpec 实战指南：AI 辅助软件工程全流程深度复盘](docs/openspec-ai-workflow-analysis.md)，了解 AI 协作的最佳实践。
+3. **深入**: 阅读 [OpenSpec 实战指南：AI 辅助软件工程全流程深度复盘](docs/openspec-ai-workflow-analysis.md)，了解 AI 协作的最佳实践。
 4. **动手**: 运行 `examples/ecommerce-mini` 和 `examples/ecommerce-mini-python`，体验规范驱动开发。
 5. **研究**: 查看 `examples/openspec/changes/v1-mvp/` 下的规范文件，学习如何编写规范。
 
