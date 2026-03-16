@@ -46,8 +46,10 @@
 
 ### 3. OpenSpec 规范
 
-记录项目的规范定义、设计演进与变更历史。
+记录项目的规范定义、设计演进与变更历史，以及 AI 助手的配置。
 
+- **`openspec/AGENTS.md`**: AI 助手的指令文件，定义了 Slash Commands 和工作流规范。
+- **`openspec/project.md`**: 项目上下文描述，帮助 AI 理解项目架构和技术栈。
 - **`openspec/changes/v1-mvp`**: MVP 版本的完整规范定义。
   - `proposal.md`: 变更提案，定义目标与范围。
   - `design.md`: 系统架构设计，包括分层架构与数据流。
@@ -74,6 +76,7 @@
 - **多语言实现**: 使用相同的规范驱动 Node.js 和 Python 两套实现。
 - **完整测试覆盖**: 单元测试、集成测试、性能测试。
 - **生产级扩展**: 持久化存储、鉴权、幂等性、可观测性。
+- **AI 深度协作**: 内置 `AGENTS.md` 指令集，支持 `/opsx:propose`、`/opsx:apply` 等标准化 Slash Commands 工作流。
 
 ---
 

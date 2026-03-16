@@ -73,7 +73,7 @@
       - [8.3.3 不好的场景示例](#833-不好的场景示例)
     - [8.4 迭代开发最佳实践](#84-迭代开发最佳实践)
     - [8.5 与 AI 协作最佳实践](#85-与-ai-协作最佳实践)
-      - [8.5.1 Slash Commands](#851-slash-commands)
+      - [8.5.1 Slash Commands (推荐)](#851-slash-commands-推荐)
       - [8.5.2 与 AI 协作的技巧](#852-与-ai-协作的技巧)
     - [8.6 团队协作最佳实践](#86-团队协作最佳实践)
       - [8.6.1 代码审查清单](#861-代码审查清单)
@@ -108,11 +108,11 @@ OpenSpec 是一个**规范驱动开发（Spec-Driven Development, SDD）框架**
 
 ### 1.2 核心理念
 
-| 理念 | 含义 |
-| ------ | ------ |
-| **流动而非僵化** | 文档可以随时更新，没有严格的阶段门槛 |
-| **迭代而非瀑布** | 支持增量添加需求，逐步完善 |
-| **简单而非复杂** | 只需要 Markdown 文件，无复杂工具链 |
+| 理念                   | 含义                                                             |
+| ---------------------- | ---------------------------------------------------------------- |
+| **流动而非僵化**       | 文档可以随时更新，没有严格的阶段门槛                             |
+| **迭代而非瀑布**       | 支持增量添加需求，逐步完善                                       |
+| **简单而非复杂**       | 只需要 Markdown 文件，无复杂工具链                               |
 | **兼顾存量与新建项目** | 既适用于已有代码库（Brownfield），也适用于全新项目（Greenfield） |
 
 > **术语解释**：
@@ -246,8 +246,8 @@ openspec init --tools claude,cursor
 your-project/
 ├── .openspec/                    # OpenSpec 内部配置目录（自动生成）
 ├── openspec/                     # OpenSpec 工作目录
-│   ├── agent-instructions.md     # AI 代理指导文件（告诉 AI 如何使用 OpenSpec）
-│   ├── project-context.md        # 项目上下文（项目背景、技术栈等）
+│   ├── AGENTS.md                 # AI 代理指导文件（告诉 AI 如何使用 OpenSpec）
+│   ├── project.md                # 项目上下文（项目背景、技术栈等）
 │   ├── changes/                  # 变更提案目录（每个功能/变更一个文件夹）
 │   └── specs/                    # 主规范目录（已归档的规范）
 └── ... (项目其他文件)
@@ -255,12 +255,12 @@ your-project/
 
 ### 3.5 各文件说明
 
-| 文件/目录 | 用途 | 是否必需 |
-| ----------- | ------ | ---------- |
-| `agent-instructions.md` | 指导 AI 如何遵循 OpenSpec 工作流 | 推荐保留 |
-| `project-context.md` | 项目背景、技术栈、约束条件 | 推荐填写 |
-| `changes/` | 存放活跃的变更提案 | 必需 |
-| `specs/` | 存放已归档的规范 | 可选 |
+| 文件/目录    | 用途                             | 是否必需 |
+| ------------ | -------------------------------- | -------- |
+| `AGENTS.md`  | 指导 AI 如何遵循 OpenSpec 工作流 | 推荐保留 |
+| `project.md` | 项目背景、技术栈、约束条件       | 推荐填写 |
+| `changes/`   | 存放活跃的变更提案               | 必需     |
+| `specs/`     | 存放已归档的规范                 | 可选     |
 
 ---
 
@@ -325,13 +325,13 @@ openspec/changes/<change-name>/
 
 ### 4.4 各文件作用
 
-| 文件 | 作用 | 是否必需 | 格式要求 |
-| ------ | ------ | ---------- | ---------- |
-| `proposal.md` | 说明"为什么做"和"做什么" | **必需** | 必须包含 `## Why` 和 `## What Changes` |
-| `specs/<capability>/spec.md` | 详细的需求和验收场景 | **必需** | 必须使用 Delta Header + Requirement + Scenario 格式 |
-| `design.md` | 技术实现方案 | 推荐 | 无严格格式要求 |
-| `tasks.md` | 实现任务清单 | 推荐 | 无严格格式要求 |
-| `schemas/*.proto` | 数据结构定义 | 可选 | Protocol Buffers 格式 |
+| 文件                         | 作用                     | 是否必需 | 格式要求                                            |
+| ---------------------------- | ------------------------ | -------- | --------------------------------------------------- |
+| `proposal.md`                | 说明"为什么做"和"做什么" | **必需** | 必须包含 `## Why` 和 `## What Changes`              |
+| `specs/<capability>/spec.md` | 详细的需求和验收场景     | **必需** | 必须使用 Delta Header + Requirement + Scenario 格式 |
+| `design.md`                  | 技术实现方案             | 推荐     | 无严格格式要求                                      |
+| `tasks.md`                   | 实现任务清单             | 推荐     | 无严格格式要求                                      |
+| `schemas/*.proto`            | 数据结构定义             | 可选     | Protocol Buffers 格式                               |
 
 ### 4.5 变更的生命周期
 
@@ -422,12 +422,12 @@ specs/
 
 #### 5.3.1 格式要点速查表
 
-| 元素 | 格式 | 示例 |
-| ------ | ------ | ------ |
-| Delta Header | `## ADDED/MODIFIED/REMOVED Requirements` | `## ADDED Requirements` |
-| 需求标题 | `### Requirement: <标题>` | `### Requirement: GPU 自动发现` |
-| 场景标题 | `#### Scenario: <标题>` | `#### Scenario: NVIDIA GPU 发现` |
-| 场景内容 | Gherkin 格式 | `Given/When/Then` |
+| 元素         | 格式                                     | 示例                             |
+| ------------ | ---------------------------------------- | -------------------------------- |
+| Delta Header | `## ADDED/MODIFIED/REMOVED Requirements` | `## ADDED Requirements`          |
+| 需求标题     | `### Requirement: <标题>`                | `### Requirement: GPU 自动发现`  |
+| 场景标题     | `#### Scenario: <标题>`                  | `#### Scenario: NVIDIA GPU 发现` |
+| 场景内容     | Gherkin 格式                             | `Given/When/Then`                |
 
 #### 5.3.2 完整格式模板
 
@@ -479,11 +479,11 @@ And 每个 GPU 的型号、显存、驱动版本被记录到 CMDB
 ```markdown
 ## ADDED Requirements
 
-### REQ-001: GPU Discovery    # 错误：使用了自定义编号
+### REQ-001: GPU Discovery # 错误：使用了自定义编号
 
 System SHALL discover GPUs.
 
-#### Scenario: Discovery    # 错误：场景标题太模糊
+#### Scenario: Discovery # 错误：场景标题太模糊
 ```
 
 ✅ **正确写法**：
@@ -491,7 +491,7 @@ System SHALL discover GPUs.
 ```markdown
 ## ADDED Requirements
 
-### Requirement: GPU 自动发现    # 正确：使用标准格式
+### Requirement: GPU 自动发现 # 正确：使用标准格式
 
 系统应自动发现集群中的 GPU 设备。
 
@@ -499,7 +499,7 @@ System SHALL discover GPUs.
 
 **Rationale**: 核心功能需求。
 
-#### Scenario: NVIDIA GPU 发现    # 正确：场景标题具体
+#### Scenario: NVIDIA GPU 发现 # 正确：场景标题具体
 
 Given 一个包含 NVIDIA GPU 节点的 Kubernetes 集群
 When 发现代理部署到集群
@@ -568,13 +568,13 @@ Then 所有 NVIDIA GPU 被枚举并记录到 CMDB
 
 ### 5.7 模板文件汇总
 
-| 模板 | 路径 | 用途 |
-| ------ | ------ | ------ |
+| 模板             | 路径                                                                       | 用途         |
+| ---------------- | -------------------------------------------------------------------------- | ------------ |
 | proposal.md 模板 | [docs/templates/proposal-template.md](docs/templates/proposal-template.md) | 提案文档模板 |
-| spec.md 模板 | [docs/templates/spec-template.md](docs/templates/spec-template.md) | 能力规范模板 |
-| design.md 模板 | [docs/templates/design-template.md](docs/templates/design-template.md) | 技术设计模板 |
-| tasks.md 模板 | [docs/templates/tasks-template.md](docs/templates/tasks-template.md) | 任务清单模板 |
-| spec.md 示例 | [docs/templates/spec-example.md](docs/templates/spec-example.md) | 能力规范示例 |
+| spec.md 模板     | [docs/templates/spec-template.md](docs/templates/spec-template.md)         | 能力规范模板 |
+| design.md 模板   | [docs/templates/design-template.md](docs/templates/design-template.md)     | 技术设计模板 |
+| tasks.md 模板    | [docs/templates/tasks-template.md](docs/templates/tasks-template.md)       | 任务清单模板 |
+| spec.md 示例     | [docs/templates/spec-example.md](docs/templates/spec-example.md)           | 能力规范示例 |
 
 ---
 
@@ -628,20 +628,21 @@ Ensure your change has a specs/ directory with capability folders
 
 1. 确保 specs/ 下有能力文件夹：
 
-    ```text
-    specs/
-    └── your-capability/      # 能力文件夹
-        └── spec.md           # 规范文件
-    ```
+   ```text
+   specs/
+   └── your-capability/      # 能力文件夹
+       └── spec.md           # 规范文件
+   ```
 
 2. 确保 spec.md 中有 Delta Header：
 
-    ```markdown
-    ## ADDED Requirements
+   ```markdown
+   ## ADDED Requirements
 
-    ### Requirement: 某个需求
-    ...
-    ```
+   ### Requirement: 某个需求
+
+   ...
+   ```
 
 **常见错误**：
 
@@ -657,8 +658,8 @@ specs/
 **错误信息**：
 
 ```bash
-✗ [ERROR] Delta sections ## ADDED Requirements were found, 
-but no requirement entries parsed. Ensure each section includes 
+✗ [ERROR] Delta sections ## ADDED Requirements were found,
+but no requirement entries parsed. Ensure each section includes
 at least one "### Requirement:" block
 ```
 
@@ -669,9 +670,11 @@ at least one "### Requirement:" block
 ```markdown
 ## ADDED Requirements
 
-### REQ-001: GPU Discovery      # ❌ 错误：使用了自定义编号
-### GPU Discovery               # ❌ 错误：缺少 "Requirement:" 前缀
-### requirement: GPU Discovery  # ❌ 错误："requirement" 应首字母大写
+### REQ-001: GPU Discovery # ❌ 错误：使用了自定义编号
+
+### GPU Discovery # ❌ 错误：缺少 "Requirement:" 前缀
+
+### requirement: GPU Discovery # ❌ 错误："requirement" 应首字母大写
 ```
 
 **正确格式**：
@@ -679,7 +682,7 @@ at least one "### Requirement:" block
 ```markdown
 ## ADDED Requirements
 
-### Requirement: GPU 自动发现    # ✓ 正确格式
+### Requirement: GPU 自动发现 # ✓ 正确格式
 ```
 
 ---
@@ -772,37 +775,37 @@ Artifacts:
 
 ### 7.1 初始化与创建
 
-| 命令 | 说明 | 示例 |
-| ------ | ------ | ------ |
-| `openspec init` | 初始化 OpenSpec 项目 | `openspec init --tools none` |
-| `openspec new change <name>` | 创建新变更提案 | `openspec new change user-auth` |
+| 命令                         | 说明                 | 示例                            |
+| ---------------------------- | -------------------- | ------------------------------- |
+| `openspec init`              | 初始化 OpenSpec 项目 | `openspec init --tools none`    |
+| `openspec new change <name>` | 创建新变更提案       | `openspec new change user-auth` |
 
 ### 7.2 查看与验证
 
-| 命令 | 说明 | 示例 |
-| ------ | ------ | ------ |
-| `openspec view` | 打开交互式 Web 仪表盘 | `openspec view` |
-| `openspec status --change <name>` | 查看变更状态 | `openspec status --change user-auth` |
-| `openspec validate <name>` | 验证变更文档格式 | `openspec validate user-auth` |
-| `openspec list --changes` | 列出所有变更 | `openspec list --changes` |
-| `openspec list --specs` | 列出所有规范 | `openspec list --specs` |
-| `openspec show <name>` | 显示变更详情 | `openspec show user-auth` |
+| 命令                              | 说明                  | 示例                                 |
+| --------------------------------- | --------------------- | ------------------------------------ |
+| `openspec view`                   | 打开交互式 Web 仪表盘 | `openspec view`                      |
+| `openspec status --change <name>` | 查看变更状态          | `openspec status --change user-auth` |
+| `openspec validate <name>`        | 验证变更文档格式      | `openspec validate user-auth`        |
+| `openspec list --changes`         | 列出所有变更          | `openspec list --changes`            |
+| `openspec list --specs`           | 列出所有规范          | `openspec list --specs`              |
+| `openspec show <name>`            | 显示变更详情          | `openspec show user-auth`            |
 
 ### 7.3 归档与管理
 
-| 命令 | 说明 | 示例 |
-| ------ | ------ | ------ |
+| 命令                      | 说明             | 示例                         |
+| ------------------------- | ---------------- | ---------------------------- |
 | `openspec archive <name>` | 归档已完成的变更 | `openspec archive user-auth` |
-| `openspec update` | 更新 AI 指导文件 | `openspec update` |
+| `openspec update`         | 更新 AI 指导文件 | `openspec update`            |
 
 ### 7.4 配置与调试
 
-| 命令 | 说明 | 示例 |
-| ------ | ------ | ------ |
-| `openspec config` | 查看和修改配置 | `openspec config` |
+| 命令                        | 说明             | 示例                                                  |
+| --------------------------- | ---------------- | ----------------------------------------------------- |
+| `openspec config`           | 查看和修改配置   | `openspec config`                                     |
 | `openspec change show <id>` | 查看变更解析结果 | `openspec change show user-auth --json --deltas-only` |
-| `openspec --version` | 查看版本号 | `openspec --version` |
-| `openspec --help` | 查看帮助信息 | `openspec --help` |
+| `openspec --version`        | 查看版本号       | `openspec --version`                                  |
+| `openspec --help`           | 查看帮助信息     | `openspec --help`                                     |
 
 ### 7.5 全局选项
 
@@ -875,6 +878,7 @@ openspec archive <name>
 
 当前系统没有用户认证功能，任何人都可以访问所有数据和功能。
 这导致：
+
 - 无法追踪操作日志的责任人
 - 敏感数据缺乏保护
 - 无法实现细粒度的权限控制
@@ -882,6 +886,7 @@ openspec archive <name>
 ### Problem Statement
 
 系统需要一个安全可靠的用户认证机制，支持：
+
 - 用户名密码登录
 - 第三方 OAuth 登录（GitHub、Google）
 - 会话管理和安全退出
@@ -913,12 +918,12 @@ openspec archive <name>
 
 #### 8.3.1 Gherkin 格式要点
 
-| 关键字 | 用途 | 示例 |
-| -------- | ------ | ------ |
-| `Given` | 前置条件，描述系统初始状态 | `Given 用户已登录系统` |
-| `When` | 触发动作 | `When 用户点击"提交订单"按钮` |
-| `Then` | 预期结果 | `Then 订单状态变为"待支付"` |
-| `And` | 连接多个条件或结果 | `And 用户收到订单确认邮件` |
+| 关键字  | 用途                       | 示例                          |
+| ------- | -------------------------- | ----------------------------- |
+| `Given` | 前置条件，描述系统初始状态 | `Given 用户已登录系统`        |
+| `When`  | 触发动作                   | `When 用户点击"提交订单"按钮` |
+| `Then`  | 预期结果                   | `Then 订单状态变为"待支付"`   |
+| `And`   | 连接多个条件或结果         | `And 用户收到订单确认邮件`    |
 
 #### 8.3.2 好的场景示例
 
@@ -960,15 +965,17 @@ Then 成功
 
 ### 8.5 与 AI 协作最佳实践
 
-#### 8.5.1 Slash Commands
+#### 8.5.1 Slash Commands (推荐)
 
-OpenSpec 提供了专门的 slash commands：
+OpenSpec 专为 AI 协作设计，通过标准化的 Slash Commands 可以极大提升开发效率。在支持 Slash Commands 的 AI 助手（如 Cursor, Windsurf, Claude Code）中，可以直接使用以下命令：
 
-| 命令 | 用途 |
-| ------ | ------ |
-| `/opsx:new` | 创建新的变更提案 |
-| `/opsx:continue` | 继续未完成的变更 |
-| `/opsx:apply` | 应用变更规范到代码实现 |
+| 命令                          | 作用               | 对应 CLI 操作                 |
+| :---------------------------- | :----------------- | :---------------------------- |
+| `/opsx:propose <description>` | 提出变更并生成规范 | `openspec new change ...`     |
+| `/opsx:apply`                 | 根据规范实现代码   | `openspec apply` (需配合插件) |
+| `/opsx:archive`               | 完成并归档变更     | `openspec archive ...`        |
+
+> **注意**：旧版本可能使用 `/openspec:` 前缀，建议迁移到 `/opsx:` 以获得最新特性支持。
 
 #### 8.5.2 与 AI 协作的技巧
 
@@ -1003,19 +1010,19 @@ OpenSpec 提供了专门的 slash commands：
 
 OpenSpec 支持 20+ AI 编程助手，以下是常用工具：
 
-| 工具 | 类型 | 支持程度 |
-| ------ | ------ | ---------- |
-| **Claude Code** | CLI + IDE | 完全支持 |
-| **Qoder** | IDE | 完全支持（选择 Claude Code 配置） |
-| **Cursor** | IDE | 完全支持 |
-| **GitHub Copilot** | IDE 插件 | 完全支持 |
-| **Cline** | VS Code 插件 | 完全支持 |
-| **Windsurf** | IDE | 完全支持 |
-| **Amazon Q Developer** | IDE 插件 | 完全支持 |
-| **Gemini CLI** | CLI | 完全支持 |
-| **Continue** | IDE 插件 | 完全支持 |
-| **Aider** | CLI | 完全支持 |
-| **Roo Code** | VS Code 插件 | 完全支持 |
+| 工具                   | 类型         | 支持程度                          |
+| ---------------------- | ------------ | --------------------------------- |
+| **Claude Code**        | CLI + IDE    | 完全支持                          |
+| **Qoder**              | IDE          | 完全支持（选择 Claude Code 配置） |
+| **Cursor**             | IDE          | 完全支持                          |
+| **GitHub Copilot**     | IDE 插件     | 完全支持                          |
+| **Cline**              | VS Code 插件 | 完全支持                          |
+| **Windsurf**           | IDE          | 完全支持                          |
+| **Amazon Q Developer** | IDE 插件     | 完全支持                          |
+| **Gemini CLI**         | CLI          | 完全支持                          |
+| **Continue**           | IDE 插件     | 完全支持                          |
+| **Aider**              | CLI          | 完全支持                          |
+| **Roo Code**           | VS Code 插件 | 完全支持                          |
 
 ### 9.2 遥测设置
 
@@ -1037,13 +1044,13 @@ echo 'export OPENSPEC_TELEMETRY=0' >> ~/.bashrc # Bash
 
 #### 9.3.1 Q1：OpenSpec 与 Swagger/OpenAPI 有什么区别？
 
-| 特性 | OpenSpec | OpenAPI/Swagger |
-| ------ | ---------- | ----------------- |
-| 主要用途 | 需求规范驱动开发 | API 接口文档 |
-| 文档类型 | Markdown | YAML/JSON |
-| 验证方式 | CLI 验证 + AI 理解 | 语法验证 |
-| 适用阶段 | 开发前期（需求定义） | 开发中期（接口定义） |
-| 目标用户 | 产品经理 + 开发者 + AI | 开发者 + 前端 |
+| 特性     | OpenSpec               | OpenAPI/Swagger      |
+| -------- | ---------------------- | -------------------- |
+| 主要用途 | 需求规范驱动开发       | API 接口文档         |
+| 文档类型 | Markdown               | YAML/JSON            |
+| 验证方式 | CLI 验证 + AI 理解     | 语法验证             |
+| 适用阶段 | 开发前期（需求定义）   | 开发中期（接口定义） |
+| 目标用户 | 产品经理 + 开发者 + AI | 开发者 + 前端        |
 
 两者可以配合使用：先用 OpenSpec 定义需求和场景，再用 OpenAPI 定义接口细节。
 
@@ -1055,9 +1062,9 @@ echo 'export OPENSPEC_TELEMETRY=0' >> ~/.bashrc # Bash
 
 #### 9.3.3 Q3：规范写完后，AI 不遵循怎么办？
 
-1. 确保 `agent-instructions.md` 文件存在
+1. 确保 `openspec/AGENTS.md` 文件存在
 2. 在对话开始时明确指出：`请遵循 openspec/changes/<name>/ 目录下的规范文档`
-3. 使用 OpenSpec 提供的 slash commands
+3. 使用 OpenSpec 提供的 slash commands（如 `/opsx:apply`）
 
 #### 9.3.4 Q4：多个变更可以同时进行吗？
 
@@ -1068,15 +1075,15 @@ echo 'export OPENSPEC_TELEMETRY=0' >> ~/.bashrc # Bash
 
 ### 9.4 参考链接
 
-| 资源 | 链接 |
-| ------ | ------ |
-| 官方仓库 | <https://github.com/Fission-AI/OpenSpec> |
-| 快速入门 | <https://openspec.pro/getting-started/> |
+| 资源     | 链接                                                    |
+| -------- | ------------------------------------------------------- |
+| 官方仓库 | <https://github.com/Fission-AI/OpenSpec>                |
+| 快速入门 | <https://openspec.pro/getting-started/>                 |
 | 官方文档 | <https://github.com/Fission-AI/OpenSpec/tree/main/docs> |
-| npm 包 | <https://www.npmjs.com/package/@fission-ai/openspec> |
+| npm 包   | <https://www.npmjs.com/package/@fission-ai/openspec>    |
 
 ---
 
-*文档版本: 1.4*
-*最后更新: 2026-02-23*
-*基于 AI Infrastructure CMDB 项目实践经验编写*
+_文档版本: 1.5_
+_最后更新: 2026-03-16_
+_基于 AI Infrastructure CMDB 项目实践经验编写_
