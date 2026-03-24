@@ -129,6 +129,14 @@ python -m uvicorn src.api.server:app --reload
 
 ---
 
+## 配套 AI 技能
+
+为了在实际开发中更高效地落地 OpenSpec 规范，本项目推荐搭配专用的 AI 助手技能进行协作。
+
+- **[OpenSpec Assistant](https://github.com/ForceInjection/awesome-skills/tree/main/openspec-assistant)**: 这是一个专为执行 OpenSpec 规范驱动开发 (SDD) 而设计的 AI 技能。它涵盖了意图对齐、规范生成、代码实现与自动化验证的完整生命周期。同时支持架构师 (编写与评审 Spec) 、开发者 (编写代码) 和 QA (编写测试) 等多角色协同工作，并原生支持本项目的 `/opsx` 指令体系。
+
+---
+
 ## 相关链接
 
 - [OpenSpec 官方仓库](https://github.com/Fission-AI/OpenSpec)
