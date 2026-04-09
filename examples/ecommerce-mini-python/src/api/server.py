@@ -26,6 +26,7 @@ class AddProductRequest(BaseModel):
     stock: int
 
 class AddToCartRequest(BaseModel):
+    userId: str
     productId: str
     quantity: int
 
@@ -42,10 +43,8 @@ def add_product(req: AddProductRequest):
 
 @app.post("/api/cart/items", response_model=Cart)
 def add_to_cart(req: AddToCartRequest):
-    # Mock user
-    user_id = "user_dev"
     try:
-        return cart_svc.add_to_cart(user_id, req.productId, req.quantity)
+        return cart_svc.add_to_cart(req.userId, req.productId, req.quantity)
     except ValueError as e:
         if str(e) == "PRODUCT_NOT_FOUND":
             raise HTTPException(status_code=404, detail="Product not found")

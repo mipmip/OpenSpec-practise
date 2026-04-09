@@ -17,6 +17,7 @@ def test_smoke_flow():
 
     # 2. Add to Cart
     res = client.post("/api/cart/items", json={
+        "userId": "user_dev",
         "productId": pid,
         "quantity": 2
     })
@@ -36,3 +37,28 @@ def test_smoke_flow():
     # 4. Verify Stock Deducted
     # Note: In real integration test we might check GET /products or GET /products/:id
     # Here we just rely on previous steps success
+
+
+def test_out_of_stock():
+    user_id = "user_2"
+    # Add product with stock of 5
+    res = client.post("/api/products", json={
+        "name": "Limited Item",
+        "priceCents": 200,
+        "stock": 5
+    })
+    assert res.status_code == 201
+    product = res.json()
+    pid = product["id"]
+
+    # Try to add 6 units (exceeds stock of 5)
+    client.post("/api/cart/items", json={
+        "userId": user_id,
+        "productId": pid,
+        "quantity": 6
+    })
+
+    # Verify 409 is returned
+    resp = client.post("/api/orders", json={"userId": user_id})
+    assert resp.status_code == 409
+    assert "out of stock" in resp.json()["detail"].lower()
