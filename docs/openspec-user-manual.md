@@ -20,7 +20,6 @@
     - [3.3 非交互模式](#33-非交互模式)
     - [3.4 初始化后的目录结构](#34-初始化后的目录结构)
     - [3.5 各文件说明](#35-各文件说明)
-      - [config.yaml 结构示例](#configyaml-结构示例)
   - [4. 创建变更提案](#4-创建变更提案)
     - [4.1 创建新变更](#41-创建新变更)
     - [4.2 示例：创建 AI Infrastructure CMDB 核心变更](#42-示例创建-ai-infrastructure-cmdb-核心变更)
@@ -29,7 +28,7 @@
     - [4.5 变更的生命周期](#45-变更的生命周期)
   - [5. 文档结构规范](#5-文档结构规范)
     - [5.1 proposal.md - 提案文档](#51-proposalmd---提案文档)
-      - [5.1.1 为什么需要这两个章节？](#511-为什么需要这两个章节)
+      - [5.1.1 为什么需要这些章节？](#511-为什么需要这些章节)
       - [5.1.2 完整格式模板](#512-完整格式模板)
     - [5.2 specs/ 目录 - 能力规范](#52-specs-目录---能力规范)
       - [目录结构示例](#目录结构示例)
@@ -74,7 +73,7 @@
       - [8.3.3 不好的场景示例](#833-不好的场景示例)
     - [8.4 迭代开发最佳实践](#84-迭代开发最佳实践)
     - [8.5 与 AI 协作最佳实践](#85-与-ai-协作最佳实践)
-      - [8.5.1 OPSX 断杉命令（推荐）](#851-opsx-断杉命令推荐)
+      - [8.5.1 OPSX 斜杠命令（Slash Commands，推荐）](#851-opsx-斜杠命令slash-commands推荐)
       - [8.5.2 与 AI 协作的技巧](#852-与-ai-协作的技巧)
     - [8.6 团队协作最佳实践](#86-团队协作最佳实践)
       - [8.6.1 代码审查清单](#861-代码审查清单)
@@ -189,8 +188,7 @@ openspec --help
 安装成功后，你将看到类似输出：
 
 ```bash
-OpenSpec v1.2.0
-Spec-Driven Development for AI Coding Assistants
+1.2.0
 ```
 
 ---
@@ -199,14 +197,16 @@ Spec-Driven Development for AI Coding Assistants
 
 ### 3.1 初始化命令
 
-在项目根目录执行初始化命令：
+`openspec init` 是 OpenSpec 的入口命令，在项目根目录执行后，它会：
+
+1. 引导选择需要集成的 AI 工具（或使用 `--tools` 参数跳过交互）
+2. 创建 `openspec/` 工作目录（含 `config.yaml`、`changes/`、`specs/`）
+3. 在所选 AI 工具的对应目录下生成斜杠命令和 Skills 文件
 
 ```bash
 cd your-project
 openspec init
 ```
-
-执行后，OpenSpec 会创建必要的目录结构和配置文件。
 
 ### 3.2 交互式配置
 
@@ -224,7 +224,7 @@ openspec init
 
 使用空格键选择，回车键确认。
 
-> **Qoder 用户提示**：如果你使用的是 Qoder IDE，请选择 **Claude Code**。这是因为 Qoder 基于 Claude 架构构建，与 Claude Code 使用相同的配置。
+> **Qoder 用户提示**：如果你使用的是 Qoder IDE，请选择 **Qoder**。OpenSpec v1.2.0 对 Qoder 提供原生支持，会自动在 `.qoder/commands/opsx/` 和 `.qoder/skills/` 目录生成对应的命令和 Skills 文件。
 
 ### 3.3 非交互模式
 
@@ -239,7 +239,27 @@ openspec init --tools all
 
 # 只配置特定工具（逗号分隔）
 openspec init --tools claude,cursor
+
+# 配置 Qoder
+openspec init --tools qoder
 ```
+
+**常用工具标识符列表**：
+
+| 工具名称           | `--tools` 参数值 |
+| ------------------ | ---------------- |
+| Claude Code        | `claude`         |
+| Qoder              | `qoder`          |
+| Cursor             | `cursor`         |
+| GitHub Copilot     | `github-copilot` |
+| Cline              | `cline`          |
+| Windsurf           | `windsurf`       |
+| Amazon Q Developer | `amazon-q`       |
+| Gemini CLI         | `gemini`         |
+| Continue           | `continue`       |
+| Roo Code           | `roocode`        |
+
+> **完整列表**：运行 `openspec init --help` 可查看当前版本支持的所有工具标识符。
 
 ### 3.4 初始化后的目录结构
 
@@ -275,7 +295,7 @@ your-project/
 
 > **与旧版的区别**：v1.0.0 起，`openspec/AGENTS.md` 和 `openspec/project.md` 已移除。项目上下文统一写入 `openspec/config.yaml` 的 `context:` 字段，该字段会被注入到每一次 AI 规划请求中，比旧方式更可靠。
 
-#### config.yaml 结构示例
+**config.yaml 结构示例**：
 
 ```yaml
 schema: spec-driven
@@ -305,7 +325,7 @@ rules:
 
 ### 4.1 创建新变更
 
-**方式一：使用断杉命令（推荐，一步完成）**:
+**方式一：使用斜杠命令（Slash Commands，推荐，一步完成）**:
 
 ```text
 /opsx:propose <description>
@@ -313,43 +333,54 @@ rules:
 
 这个命令会：
 
-1. 推断起一个 kebab-case 变更名（如 `add-user-auth`）
+1. 推断出一个 kebab-case 变更名（如 `add-user-auth`）
 2. 创建 `openspec/changes/<name>/`
 3. 依次生成 `proposal.md`、`design.md`、`specs/`、`tasks.md` 所有文档
 
-**方式二：使用 CLI**:
+**方式二：仅创建变更目录（扩展工作流 Profile 下使用）**:
+
+斜杠命令：
+
+```text
+/opsx:new <change-name>
+```
+
+等价 CLI 命令：
 
 ```bash
 openspec new change <change-name>
 ```
 
+仅初始化变更目录结构，不创建任何文档；适合配合 `/opsx:continue` 逐步手动生成文档时使用。
+
 **命名建议**：使用 kebab-case（短横线分隔），名称应简洁明了地描述变更内容。
 
-```bash
+```text
 # 好的命名示例
-openspec new change user-authentication
-openspec new change add-payment-module
-openspec new change fix-login-timeout
+add-user-authentication
+add-payment-module
+fix-login-timeout
 
 # 不好的命名示例
-openspec new change feature1          # 太模糊
-openspec new change addUserAuth       # 应使用 kebab-case
+feature1           # 太模糊
+addUserAuth        # 应使用 kebab-case
 ```
 
 ### 4.2 示例：创建 AI Infrastructure CMDB 核心变更
 
-```bash
-openspec new change ai-infra-cmdb-core
+```text
+/opsx:propose "实现 AI Infrastructure CMDB 核心功能"
 ```
 
-输出示例：
+AI 将自动创建变更并生成所有规划文档：
 
 ```bash
-✓ Created change directory: openspec/changes/ai-infra-cmdb-core
+✓ Created change directory: openspec/changes/ai-infra-cmdb-core/
 ✓ Created proposal.md
 ✓ Created design.md
-✓ Created tasks.md
 ✓ Created specs/ directory
+  ✓ specs/accelerator-management/spec.md
+✓ Created tasks.md
 ✓ Created .openspec.yaml
 
 Change 'ai-infra-cmdb-core' created successfully!
@@ -368,31 +399,28 @@ openspec/changes/<change-name>/
     │   └── spec.md    # 能力规范（使用 Requirement + Scenario 格式）
     ├── <capability-2>/
     │   └── spec.md
-    └── schemas/       # 模式定义（可选，存放 .proto 文件等）
-        └── *.proto
 ```
 
 ### 4.4 各文件作用
 
-| 文件                         | 作用                     | 是否必需 | 格式要求                                            |
-| ---------------------------- | ------------------------ | -------- | --------------------------------------------------- |
-| `proposal.md`                | 说明"为什么做"和"做什么" | **必需** | 必须包含 `## Why` 和 `## What Changes`              |
-| `specs/<capability>/spec.md` | 详细的需求和验收场景     | **必需** | 必须使用 Delta Header + Requirement + Scenario 格式 |
-| `design.md`                  | 技术实现方案             | 推荐     | 无严格格式要求                                      |
-| `tasks.md`                   | 实现任务清单             | 推荐     | 无严格格式要求                                      |
-| `schemas/*.proto`            | 数据结构定义             | 可选     | Protocol Buffers 格式                               |
+| 文件                         | 作用                     | 是否必需 | 格式要求                                                                                              |
+| ---------------------------- | ------------------------ | -------- | ----------------------------------------------------------------------------------------------------- |
+| `proposal.md`                | 说明“为什么做”和“做什么” | **必需** | 必须包含 `## Why` 和 `## What Changes`（验证器强制检查）；推荐包含 `## Capabilities`（AI 工作流所需） |
+| `specs/<capability>/spec.md` | 详细的需求和验收场景     | **必需** | 必须使用 Delta Header + Requirement + Scenario 格式                                                   |
+| `design.md`                  | 技术实现方案             | 推荐     | 无严格格式要求                                                                                        |
+| `tasks.md`                   | 实现任务清单             | 推荐     | 无严格格式要求                                                                                        |
 
 ### 4.5 变更的生命周期
 
 ```text
-提案 (断杉/CLI) → 编写规范 → 验证 (validate) → 实现 (apply) → 归档 (archive)
+提案 (斜杠命令) → 编写规范 → 验证 (validate) → 实现 (apply) → 归档 (archive)
 ```
 
-1. **提案**：`/opsx:propose <description>` 或 `openspec new change <name>`
+1. **提案**：`/opsx:propose <description>`（一步生成所有规划文档）
 2. **编写规范**：编辑 proposal.md 和 specs/
 3. **验证**：`openspec validate <name>`
 4. **实现**：`/opsx:apply` 按照 tasks.md 执行开发
-5. **归档**：`/opsx:archive` 完成并归档
+5. **归档**：`/opsx:archive` 将变更中的规范增量（Delta）合并回 `openspec/specs/` 主规范目录，并清理 `openspec/changes/` 下的临时目录，标志着该功能规范已正式「上线」
 
 ---
 
@@ -400,44 +428,47 @@ openspec/changes/<change-name>/
 
 本节详细介绍 proposal.md 和 spec.md 的格式要求。**请务必遵循这些格式，否则 `openspec validate` 会失败。**
 
-> **模板文件**：所有模板文件位于 `docs/templates/` 目录下，可直接复制使用。
+> **模板文件**：OpenSpec 内置了所有文档模板，可通过 `openspec templates` 命令查看各模板路径，或直接使用 `/opsx:propose` / `/opsx:new` 斜杠命令自动生成完整文档。
 
 ### 5.1 proposal.md - 提案文档
 
-**核心要求：** proposal.md 必须包含 `## Why` 和 `## What Changes` 两个章节，否则验证会失败。
+**核心要求：** proposal.md 必须包含 `## Why` 和 `## What Changes` 两个验证器强制检查的必需章节；推荐包含 `## Capabilities` 章节，作为 AI 自动生成 `specs/<name>/spec.md` 文件的关键输入。
 
-#### 5.1.1 为什么需要这两个章节？
+#### 5.1.1 为什么需要这些章节？
 
-OpenSpec 的设计理念是"先想清楚为什么做，再决定做什么"：
+OpenSpec 的设计理念是“先想清楚为什么做，再决定做什么，再明确影响哪些能力”：
 
-- `## Why` - 说明变更的背景、问题和动机
-- `## What Changes` - 说明具体要添加、修改或删除什么
+- `## Why` - 说明变更的背景、问题和动机（**验证器强制检查**）
+- `## What Changes` - 说明具体要添加、修改或删除什么（**验证器强制检查**）
+- `## Capabilities` - 列出 New / Modified Capabilities，驱动 `specs/<name>/spec.md` 文件的生成（**推荐，AI 工作流所需**）
 
 #### 5.1.2 完整格式模板
 
-> 模板文件：[proposal-template.md](docs/templates/proposal-template.md)
+> 内置模板路径可通过 `openspec templates` 命令查看；`/opsx:propose` 斜杠命令会自动生成填充好的完整提案。
 
 必需章节结构：
 
 ```text
 proposal.md 结构：
-├── ## Summary（摘要，可选）
-├── ## Why 【必需】
+├── ## Why 【必需 - 验证器强制检查】
 │   ├── ### Background（背景）
 │   ├── ### Problem Statement（问题描述）
 │   └── ### Alternatives Considered（备选方案）
-├── ## What Changes 【必需】
+├── ## What Changes 【必需 - 验证器强制检查】
 │   ├── ### New Resources Added（新增资源）
-│   └── ### New Capabilities（新增能力）
-├── ## Success Criteria（成功标准，可选）
+│   └── ### New Capabilities（功能点简述，自然语言概括即可）
+├── ## Capabilities 【推荐 - AI 工作流所需，驱动 spec 文件生成】
+│   ├── ### New Capabilities（kebab-case 标识符列表，每项对应 specs/<name>/ 目录）
+│   └── ### Modified Capabilities（已有能力的 requirement 变更）
+├── ## Impact（影响范围）
 ├── ## Scope（范围，可选）
-├── ## Timeline（时间线，可选）
+│   ├── ### In Scope
+│   └── ### Out of Scope
+├── ## Goals（成功标准，可选）
 └── ## References（参考链接，可选）
 ```
 
 **注意**：章节标题必须完全匹配 `## Why` 和 `## What Changes`（区分大小写）。
-
----
 
 ### 5.2 specs/ 目录 - 能力规范
 
@@ -463,8 +494,6 @@ specs/
 - 每个能力文件夹名称使用 kebab-case
 - 文件夹名称应体现能力领域
 
----
-
 ### 5.3 spec.md - 能力规范格式
 
 **核心要求：** 必须使用 Delta Header + Requirement + Scenario 格式。
@@ -478,9 +507,17 @@ specs/
 | 场景标题     | `#### Scenario: <标题>`                  | `#### Scenario: NVIDIA GPU 发现` |
 | 场景内容     | Gherkin 格式                             | `Given/When/Then`                |
 
+**Delta Header 选择说明**：
+
+| Delta Header               | 适用场景                            |
+| -------------------------- | ----------------------------------- |
+| `## ADDED Requirements`    | 本次变更新增的能力或需求            |
+| `## MODIFIED Requirements` | 对已有规范中某个 Requirement 的修改 |
+| `## REMOVED Requirements`  | 明确废弃或删除的需求                |
+
 #### 5.3.2 完整格式模板
 
-> 模板文件：[spec-template.md](docs/templates/spec-template.md)
+> 内置模板路径可通过 `openspec templates` 查看。
 
 必需格式结构：
 
@@ -500,25 +537,27 @@ spec.md 结构：
 
 #### 5.3.3 正确示例
 
-> 示例文件：[spec-example.md](docs/templates/spec-example.md)
+> 以下示例展示核心 Requirement + Scenario 结构。完整示例（含 `## Overview` 段落）参见 `examples/openspec/changes/v1-mvp/specs/domain-model/spec.md`（电商领域模型规范）：
 
 ```markdown
 ## ADDED Requirements
 
-### Requirement: GPU 自动发现
+### Requirement: 商品实体定义
 
-系统应通过 DaemonSet 部署的代理自动发现集群节点上的 GPU/NPU 设备。
+系统 SHALL 定义商品实体，包含唯一标识、名称、价格和库存。
 
 **Priority**: P0 (Critical)
 
-**Rationale**: 自动发现是 CMDB 的核心能力，没有它就无法管理 AI 基础设施资源。
+**Rationale**: 商品是电商系统的核心实体，是所有交易的基础。
 
-#### Scenario: NVIDIA GPU 发现
+#### Scenario: 创建有效商品
 
-Given 一个包含 NVIDIA GPU 节点的 Kubernetes 集群
-When 发现代理以 DaemonSet 方式部署到集群
-Then 所有 NVIDIA GPU 通过 NVML/DCGM 被枚举
-And 每个 GPU 的型号、显存、驱动版本被记录到 CMDB
+Given 需要创建新商品
+When 提供商品信息 { id, name, priceCents, stock }
+Then 商品实体创建成功
+And id 格式为 prod_xxxx
+And priceCents >= 0
+And stock >= 0
 ```
 
 #### 5.3.4 常见错误示例
@@ -555,51 +594,83 @@ When 发现代理部署到集群
 Then 所有 NVIDIA GPU 被枚举并记录到 CMDB
 ```
 
----
-
 ### 5.4 design.md - 技术设计
 
 技术设计文档没有严格的格式要求，但建议包含以下章节。
 
-> 模板文件：[design-template.md](docs/templates/design-template.md)
+> 内置模板路径可通过 `openspec templates` 查看。
 
-建议章节结构：
+**建议章节结构**：
 
-- Architecture Overview（架构概述）
-- Core Components（核心组件）
-- Data Model（数据模型）
-- API Design（API 设计）
-- Integration Patterns（集成模式）
-- Technology Stack（技术栈）
-- Security（安全设计）
-- Deployment（部署方案）
-
----
+| 章节名称              | 建议内容                                                     |
+| --------------------- | ------------------------------------------------------------ |
+| Architecture Overview | 系统整体架构图（建议使用 Mermaid 或 ASCII 图）及层次关系说明 |
+| Core Components       | 核心模块列表，每个模块的职责、边界和内部实现要点             |
+| Data Model            | 关键实体的字段定义、类型、约束及实体间关系                   |
+| API Design            | 接口路由、请求/响应格式、错误码规范                          |
+| Integration Patterns  | 与外部系统/模块的集成方式，包括事件、队列、同步调用等        |
+| Technology Stack      | 所选技术及库、选型理由和备选方案对比                         |
+| Security              | 身份认证、权限控制、数据加密、输入校验等安全设计要点         |
+| Deployment            | 环境要求、部署步骤、回滚方案                                 |
 
 ### 5.5 tasks.md - 任务清单
 
-任务清单建议按里程碑组织，使用 GitHub 风格的 Markdown 任务列表。
+任务清单用于将设计拆解为可执行的实现步骤。建议按里程碑组织，使用 GitHub 风格的 Markdown 任务列表，以便在 IDE 中直接勾选。
 
-> 模板文件：[tasks-template.md](docs/templates/tasks-template.md)
+> 内置模板路径可通过 `openspec templates` 查看。
 
-建议章节结构：
+**建议章节结构**：
 
-- Milestone（里程碑）
-- Definition of Done（完成定义）
-- Progress Tracking（进度跟踪）
+- **Milestone**：按里程碑对实现步骤分组（如 M1 基础层、M2 API 层、M3 测试）。每个任务拆小，确保单个任务可在 2 小时内完成。
+- **Definition of Done**：列出此里程碑的完成标准，如代码通过 CI、测试覆盖率达标、spec validate 通过等。
+- **Progress Tracking**：利用 `- [x]` / `- [ ]` 标记完成进度，方便 IDE 内直观查看。
+
+**示例**：
+
+```markdown
+## Milestone 1 - Domain Model
+
+### Definition of Done
+
+- 完成所有 P0 Requirement 的实现
+- `openspec validate v1-mvp` 验证通过
+- 单元测试覆盖所有领域实体
+
+### Tasks
+
+- [x] 定义 Product 实体类型（id、name、priceCents、stock）
+- [x] 定义 Cart / CartItem 实体类型
+- [ ] 定义 Order / OrderItem 实体类型
+- [ ] 实现领域实体的编排验证逻辑
+
+## Milestone 2 - Service Layer
+
+### Definition of Done
+
+- 所有服务方法均有对应集成测试
+
+### Tasks
+
+- [ ] 实现 CatalogService.getProduct / listProducts
+- [ ] 实现 CartService.addItem / removeItem
+- [ ] 实现 OrderService.checkout
+```
 
 ### 5.6 格式速查
 
 **proposal.md 必需章节**：
 
 ```text
-├── ## Why 【必需】
+├── ## Why 【必需 - 验证器强制检查】
 │   ├── ### Background
 │   ├── ### Problem Statement
 │   └── ### Alternatives Considered
-└── ## What Changes 【必需】
-    ├── ### New Resources Added
-    └── ### New Capabilities
+├── ## What Changes 【必需 - 验证器强制检查】
+│   ├── ### New Resources Added
+│   └── ### New Capabilities
+└── ## Capabilities 【推荐 - AI 工作流所需，驱动 spec 文件生成】
+    ├── ### New Capabilities
+    └── ### Modified Capabilities
 ```
 
 **specs/\[capability\]/spec.md 必需格式**：
@@ -617,13 +688,12 @@ Then 所有 NVIDIA GPU 被枚举并记录到 CMDB
 
 ### 5.7 模板文件汇总
 
-| 模板             | 路径                                                                       | 用途         |
-| ---------------- | -------------------------------------------------------------------------- | ------------ |
-| proposal.md 模板 | [docs/templates/proposal-template.md](docs/templates/proposal-template.md) | 提案文档模板 |
-| spec.md 模板     | [docs/templates/spec-template.md](docs/templates/spec-template.md)         | 能力规范模板 |
-| design.md 模板   | [docs/templates/design-template.md](docs/templates/design-template.md)     | 技术设计模板 |
-| tasks.md 模板    | [docs/templates/tasks-template.md](docs/templates/tasks-template.md)       | 任务清单模板 |
-| spec.md 示例     | [docs/templates/spec-example.md](docs/templates/spec-example.md)           | 能力规范示例 |
+| 模板             | 对应内置文件（通过 `openspec templates` 查看完整路径） | 用途         |
+| ---------------- | ------------------------------------------------------ | ------------ |
+| proposal.md 模板 | `schemas/spec-driven/templates/proposal.md`            | 提案文档模板 |
+| spec.md 模板     | `schemas/spec-driven/templates/spec.md`                | 能力规范模板 |
+| design.md 模板   | `schemas/spec-driven/templates/design.md`              | 技术设计模板 |
+| tasks.md 模板    | `schemas/spec-driven/templates/tasks.md`               | 任务清单模板 |
 
 ---
 
@@ -658,7 +728,7 @@ Expected headers: "## Why" and "## What Changes"
 
 **原因**：proposal.md 中缺少 `## Why` 或 `## What Changes` 章节。
 
-**解决方案**：确保 proposal.md 包含这两个章节，可参考 [proposal-template.md](docs/templates/proposal-template.md)。
+**解决方案**：确保 proposal.md 包含这两个章节（参考 [5.1.2 完整格式模板](#512-完整格式模板)）。
 
 ---
 
@@ -781,7 +851,7 @@ Then 所有 NVIDIA GPU 被枚举并记录到 CMDB
 如果验证失败但不确定原因，可以查看解析后的结构：
 
 ```bash
-openspec change show <change-id> --json --deltas-only
+openspec show <change-name> --json --deltas-only
 ```
 
 这会输出 JSON 格式的解析结果，帮助你了解 OpenSpec 是如何解析你的文档的。
@@ -824,40 +894,39 @@ Artifacts:
 
 ### 7.1 初始化与创建
 
-| 命令                         | 说明                   | 示例                            |
-| ---------------------------- | ---------------------- | ------------------------------- |
-| `openspec init`              | 初始化 OpenSpec 项目   | `openspec init --tools none`    |
-| `openspec update`            | 更新 AI 技能和命令文件 | `openspec update`               |
-| `openspec new change <name>` | 创建新变更提案         | `openspec new change user-auth` |
+| 命令                         | 说明                   | 示例                                |
+| ---------------------------- | ---------------------- | ----------------------------------- |
+| `openspec init`              | 初始化 OpenSpec 项目   | `openspec init --tools qoder`       |
+| `openspec new change <name>` | 仅创建变更目录结构     | `openspec new change add-user-auth` |
+| `openspec update`            | 更新 AI 技能和命令文件 | `openspec update`                   |
 
 ### 7.2 查看与验证
 
-| 命令                              | 说明                  | 示例                                 |
-| --------------------------------- | --------------------- | ------------------------------------ |
-| `openspec view`                   | 打开交互式 Web 仔表盘 | `openspec view`                      |
-| `openspec status --change <name>` | 查看变更状态          | `openspec status --change user-auth` |
-| `openspec validate <name>`        | 验证变更文档格式      | `openspec validate user-auth`        |
-| `openspec list --changes`         | 列出所有变更          | `openspec list --changes`            |
-| `openspec list --specs`           | 列出所有规范          | `openspec list --specs`              |
-| `openspec show <name>`            | 显示变更详情          | `openspec show user-auth`            |
+| 命令                              | 说明             | 示例                                           |
+| --------------------------------- | ---------------- | ---------------------------------------------- |
+| `openspec view`                   | 打开终端交互界面 | `openspec view`                                |
+| `openspec status --change <name>` | 查看变更状态     | `openspec status --change user-auth`           |
+| `openspec validate <name>`        | 验证变更文档格式 | `openspec validate user-auth`                  |
+| `openspec list --changes`         | 列出所有变更     | `openspec list --changes`                      |
+| `openspec list --specs`           | 列出所有规范     | `openspec list --specs`                        |
+| `openspec show <name>`            | 显示变更详情     | `openspec show user-auth --json --deltas-only` |
 
 ### 7.3 归档与管理
 
-| 命令                      | 说明             | 示例                         |
-| ------------------------- | ---------------- | ---------------------------- |
-| `openspec archive <name>` | 归档已完成的变更 | `openspec archive user-auth` |
-| `openspec update`         | 更新 AI 指导文件 | `openspec update`            |
+| 命令                      | 说明                                                                          | 示例                         |
+| ------------------------- | ----------------------------------------------------------------------------- | ---------------------------- |
+| `openspec archive <name>` | 归档已完成的变更（将 Delta 合并至 `specs/` 主目录并清理 `changes/` 临时目录） | `openspec archive user-auth` |
 
 ### 7.4 配置与调试
 
-| 命令                        | 说明               | 示例                                                  |
-| --------------------------- | ------------------ | ----------------------------------------------------- |
-| `openspec config list`      | 查看当前配置       | `openspec config list`                                |
-| `openspec config profile`   | 设置工作流 Profile | `openspec config profile`                             |
-| `openspec schemas`          | 列出可用 Schema    | `openspec schemas`                                    |
-| `openspec change show <id>` | 查看变更解析结果   | `openspec change show user-auth --json --deltas-only` |
-| `openspec --version`        | 查看版本号         | `openspec --version`                                  |
-| `openspec --help`           | 查看帮助信息       | `openspec --help`                                     |
+| 命令                      | 说明                       | 示例                      |
+| ------------------------- | -------------------------- | ------------------------- |
+| `openspec config list`    | 查看当前配置               | `openspec config list`    |
+| `openspec config profile` | 设置工作流 Profile         | `openspec config profile` |
+| `openspec templates`      | 查看内置文档模板的绝对路径 | `openspec templates`      |
+| `openspec schemas`        | 列出可用 Schema            | `openspec schemas`        |
+| `openspec --version`      | 查看版本号                 | `openspec --version`      |
+| `openspec --help`         | 查看帮助信息               | `openspec --help`         |
 
 ### 7.5 全局选项
 
@@ -865,11 +934,12 @@ Artifacts:
 openspec [options] <command>
 
 选项：
-  -v, --version     显示版本号
+  -V, --version     显示版本号
   -h, --help        显示帮助信息
   --no-color        禁用彩色输出
-  --json            以 JSON 格式输出
 ```
+
+> **注意**：`--json` 是各命令的独立选项，不是全局选项。例如 `openspec show <name> --json` 或 `openspec validate --json`。
 
 ### 7.6 命令速查
 
@@ -879,8 +949,12 @@ openspec [options] <command>
 # 初始化项目
 openspec init --tools none
 
-# 创建变更
+# 创建变更目录（仅创建目录，不生成文档）
 openspec new change <name>
+
+# 列出所有变更 / 规范
+openspec list --changes
+openspec list --specs
 
 # 验证变更
 openspec validate <name>
@@ -1017,27 +1091,28 @@ Then 成功
 - **频繁验证**：使用 `openspec validate` 确保格式正确
 - **版本控制**：将 OpenSpec 文档纳入 Git 管理
 - **及时归档**：完成开发后使用 `openspec archive` 归档变更
+- **存量项目（Brownfield）优先从小处入手**：对于已有历史代码的项目，建议从一个小的、相对独立的功能开始创建第一个 Change，逐步建立规范体系，不要试图一次性为所有旧代码补规范
 
 ### 8.5 与 AI 协作最佳实践
 
-#### 8.5.1 OPSX 断杉命令（推荐）
+#### 8.5.1 OPSX 斜杠命令（Slash Commands，推荐）
 
 OpenSpec 1.0+ 引入了全新的 OPSX 工作流，替换了旧版的阶段锁定模式。所有命令均通过 `openspec init` 安装到 AI 工具对应目录。
 
 **默认 Core 配置（常用 4 个命令）**:
 
-| 命令                          | 作用                                                          |
-| :---------------------------- | :------------------------------------------------------------ |
-| `/opsx:propose <description>` | 一步创建变更并生成所有规划文档（proposal/design/specs/tasks） |
-| `/opsx:explore`               | 进入探索模式，思考问题、调查代码库，不写代码                  |
-| `/opsx:apply`                 | 按照 tasks.md 实现任务                                        |
-| `/opsx:archive`               | 完成并归档当前变更                                            |
+| 命令                          | 作用                                                                                                              |
+| :---------------------------- | :---------------------------------------------------------------------------------------------------------------- |
+| `/opsx:propose <description>` | 一步创建变更并**智能生成**所有规划文档（AI 基于描述自动推断 kebab-case 目录名并填充 proposal/design/specs/tasks） |
+| `/opsx:explore`               | 进入探索模式，思考问题、调查代码库，不写代码                                                                      |
+| `/opsx:apply`                 | 按照 tasks.md 实现任务                                                                                            |
+| `/opsx:archive`               | 完成并归档当前变更                                                                                                |
 
 **扩展工作流命令（通过 `openspec config profile` 开启）**
 
 | 命令                 | 作用                                 |
 | :------------------- | :----------------------------------- |
-| `/opsx:new`          | 仅内核化变更目录，不创建文档         |
+| `/opsx:new`          | 仅初始化变更目录结构，不创建文档     |
 | `/opsx:continue`     | 按依赖顺序创建下一个文档（逐步模式） |
 | `/opsx:ff`           | 快进生成所有规划文档（一步到位）     |
 | `/opsx:verify`       | 验证实现是否与规范一致               |
@@ -1055,7 +1130,7 @@ OpenSpec 1.0+ 引入了全新的 OPSX 工作流，替换了旧版的阶段锁定
 
 1. **先探索后提案**：不确定时先用 `/opsx:explore` 思考，明确后再 `/opsx:propose`
 2. **支持流动迭代**：实现过程发现设计错误？直接编辑对应文档即可，无阶段锁定
-3. **常清理上下文**：第一次实现之前建议清空对话上下文，保持高质量指令注入
+3. **定期清理对话上下文**：开始实现任务前，建议清空当前对话上下文，确保高质量的指令注入效果
 4. **增量迭代**：完成一个需求后验证，再进行下一个
 
 ### 8.6 团队协作最佳实践
@@ -1084,19 +1159,19 @@ OpenSpec 1.0+ 引入了全新的 OPSX 工作流，替换了旧版的阶段锁定
 
 OpenSpec 支持 20+ AI 编程助手，以下是常用工具：
 
-| 工具                   | 类型         | 支持程度                          |
-| ---------------------- | ------------ | --------------------------------- |
-| **Claude Code**        | CLI + IDE    | 完全支持                          |
-| **Qoder**              | IDE          | 完全支持（选择 Claude Code 配置） |
-| **Cursor**             | IDE          | 完全支持                          |
-| **GitHub Copilot**     | IDE 插件     | 完全支持                          |
-| **Cline**              | VS Code 插件 | 完全支持                          |
-| **Windsurf**           | IDE          | 完全支持                          |
-| **Amazon Q Developer** | IDE 插件     | 完全支持                          |
-| **Gemini CLI**         | CLI          | 完全支持                          |
-| **Continue**           | IDE 插件     | 完全支持                          |
-| **Aider**              | CLI          | 完全支持                          |
-| **Roo Code**           | VS Code 插件 | 完全支持                          |
+| 工具                   | 类型         | 支持程度                                                |
+| ---------------------- | ------------ | ------------------------------------------------------- |
+| **Claude Code**        | CLI + IDE    | 完全支持                                                |
+| **Qoder**              | IDE          | 完全支持                                                |
+| **Cursor**             | IDE          | 完全支持                                                |
+| **GitHub Copilot**     | IDE 插件     | 完全支持                                                |
+| **Cline**              | VS Code 插件 | 完全支持                                                |
+| **Windsurf**           | IDE          | 完全支持                                                |
+| **Amazon Q Developer** | IDE 插件     | 完全支持                                                |
+| **Gemini CLI**         | CLI          | 完全支持                                                |
+| **Continue**           | IDE 插件     | 完全支持                                                |
+| **Aider**              | CLI          | 支持（命令行工具，不支持 `openspec init` 自动生成指令） |
+| **Roo Code**           | VS Code 插件 | 完全支持                                                |
 
 ### 9.2 遥测设置
 
@@ -1137,7 +1212,7 @@ echo 'export OPENSPEC_TELEMETRY=0' >> ~/.bashrc # Bash
 #### 9.3.3 Q3：规范写完后，AI 不遵循怎么办？
 
 1. 运行 `openspec update` 刷新 Skills 和命令文件
-2. 重启 IDE 使断杉命令生效
+2. 重启 IDE 使斜杠命令生效
 3. 在 `openspec/config.yaml` 的 `rules:` 字段添加具体约束条件
 4. 使用 `/opsx:apply` 让 AI 从任务清单开始实现，而不是直接要求写代码
 
