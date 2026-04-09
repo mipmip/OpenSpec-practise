@@ -7,9 +7,6 @@ yarn-error.log
 # Mac OS
 .DS_Store
 
-# Qoder
-.qoder
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
