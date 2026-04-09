@@ -12,7 +12,7 @@
 
 存放 OpenSpec 的理论分析与实践指南，帮助理解规范背后的思想与工作流。
 
-- **[OpenSpec使用手册](docs/OpenSpec使用手册.md)**: OpenSpec 的完整使用手册，涵盖安装、初始化、文档规范、验证、最佳实践等内容。
+- **[OpenSpec使用手册](docs/openspec-user-manual.md)**: OpenSpec 的完整使用手册，涵盖安装、初始化、文档规范、验证、最佳实践等内容。
 
   > "OpenSpec 是一个**规范驱动开发（Spec-Driven Development, SDD）框架**，专为 AI 编程助手设计。它通过在编写代码之前先定义规范，确保人与 AI 对需求达成一致。" —— _OpenSpec 使用手册_
 
@@ -46,22 +46,26 @@
 
 ### 3. OpenSpec 规范
 
-记录项目的规范定义、设计演进与变更历史，以及 AI 助手的配置。
+展示 SDD 工作流的完整规范文件，存放于 `examples/openspec/`。
 
-- **`openspec/AGENTS.md`**: AI 助手的指令文件，定义了 Slash Commands 和工作流规范。
-- **`openspec/project.md`**: 项目上下文描述，帮助 AI 理解项目架构和技术栈。
-- **`openspec/changes/v1-mvp`**: MVP 版本的完整规范定义。
-  - `proposal.md`: 变更提案，定义目标与范围。
-  - `design.md`: 系统架构设计，包括分层架构与数据流。
+- **`examples/openspec/config.yaml`**: 项目上下文配置（技术栈、约定规则等），自动注入每次 AI 规划请求。
+- **`examples/openspec/changes/v1-mvp/`**: MVP 版本的完整变更规范（已归档）。
+  - `proposal.md`: 变更提案（Why / What Changes / Capabilities）。
+  - `design.md`: 系统架构设计（分层架构与数据流）。
   - `tasks.md`: 实施任务清单。
-  - `specs/api/spec.md`: RESTful API 接口规范。
-  - `specs/domain/spec.md`: 领域模型与业务规则规范。
+  - `specs/domain-model/spec.md`: 核心领域模型规范。
+  - `specs/catalog-management/spec.md`: 商品管理规范。
+  - `specs/cart-management/spec.md`: 购物车管理规范。
+  - `specs/order-management/spec.md`: 订单管理规范。
+  - `specs/payment/spec.md`: 支付规范。
+  - `specs/error-handling/spec.md`: 错误处理规范。
+- **`examples/openspec/specs/`**: 归档后的主规范（已从 v1-mvp 归档合并）。
 
 ### 4. 测试数据
 
 示例项目使用的测试数据文件。
 
-- **`ecommerce-mini/data/`**: Node.js 版本的测试数据。
+- **`examples/ecommerce-mini/data/`**: Node.js 版本的测试数据。
   - `products.json`: 商品数据。
   - `carts.json`: 购物车数据。
   - `orders.json`: 订单数据。
@@ -76,7 +80,7 @@
 - **多语言实现**: 使用相同的规范驱动 Node.js 和 Python 两套实现。
 - **完整测试覆盖**: 单元测试、集成测试、性能测试。
 - **生产级扩展**: 持久化存储、鉴权、幂等性、可观测性。
-- **AI 深度协作**: 内置 `AGENTS.md` 指令集，支持 `/opsx:propose`、`/opsx:apply` 等标准化 Slash Commands 工作流。
+- **AI 深度协作**: 通过 `openspec init` 生成 OPSX 斜杠命令（`/opsx:propose`、`/opsx:apply` 等），支持与 20+ AI 编程助手的标准化协作工作流。
 
 ---
 
@@ -121,7 +125,7 @@ python -m uvicorn src.api.server:app --reload
 
 推荐按以下顺序学习：
 
-1. **入门**: 阅读 [OpenSpec使用手册](docs/OpenSpec使用手册.md)，了解 OpenSpec 的基本概念和使用方法。
+1. **入门**: 阅读 [OpenSpec使用手册](docs/openspec-user-manual.md)，了解 OpenSpec 的基本概念和使用方法。
 2. **实践**: 阅读 [OpenSpec 实战指南](docs/openspec-practical-guide.md)，理解如何在实际项目中应用。
 3. **深入**: 阅读 [OpenSpec 实战指南：AI 辅助软件工程全流程深度复盘](docs/openspec-ai-workflow-analysis.md)，了解 AI 协作的最佳实践。
 4. **动手**: 运行 `examples/ecommerce-mini` 和 `examples/ecommerce-mini-python`，体验规范驱动开发。
