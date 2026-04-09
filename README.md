@@ -4,6 +4,14 @@
 
 作为 OpenSpec 的学习与实践仓库，本项目提供了系统的文档分析、详细的使用手册及多语言示例，旨在帮助开发者深入理解并高效应用该规范。
 
+---
+
+**Star History**:
+
+## ![Star History Chart](https://api.star-history.com/svg?repos=ForceInjection/OpenSpec-practise&type=date&legend=top-left)
+
+---
+
 ## 项目结构
 
 本项目主要由以下四个核心模块构成：
