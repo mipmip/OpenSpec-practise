@@ -1,0 +1,30 @@
+schema: spec-driven
+
+context: |
+  Repository: OpenSpec Practise — a comprehensive guide and example of Spec-Driven Development (SDD)
+  using the OpenSpec framework. Demonstrates how to align human intent with AI implementation.
+
+  Dual-language example app: "ecommerce-mini" (mini e-commerce system)
+  - Node.js (ES Modules): examples/ecommerce-mini/ — zero-dependency, native HTTP, node:test runner
+  - Python: examples/ecommerce-mini-python/ — FastAPI + Uvicorn, Pydantic v2, Pytest
+
+  OpenSpec definitions:
+  - Root openspec/: project-level config (this file)
+  - examples/openspec/changes/v1-mvp/: actual e-commerce MVP specs (already archived/complete)
+
+  Conventions:
+  - SDD Workflow: always define/update specs in openspec/changes/ before modifying code
+  - Specs are implementation-agnostic — describe behavior, not code
+  - All specs must be verifiable via tests in both Node.js and Python implementations
+  - Node.js runtime >= v20.0.0; Python runtime >= 3.10
+
+rules:
+  proposal:
+    - Include SLO targets (latency, concurrency, quality) when relevant
+    - State which language implementations are affected (Node.js / Python / both)
+  specs:
+    - Use Given/When/Then (Gherkin) format for all Scenarios
+    - Every Requirement must include Priority (P0/P1/P2) and Rationale
+  tasks:
+    - Indicate which implementation(s) each task applies to (Node.js / Python / both)
+    - Break tasks into small checkboxes using - [ ] format

@@ -20,6 +20,7 @@
     - [3.3 非交互模式](#33-非交互模式)
     - [3.4 初始化后的目录结构](#34-初始化后的目录结构)
     - [3.5 各文件说明](#35-各文件说明)
+      - [config.yaml 结构示例](#configyaml-结构示例)
   - [4. 创建变更提案](#4-创建变更提案)
     - [4.1 创建新变更](#41-创建新变更)
     - [4.2 示例：创建 AI Infrastructure CMDB 核心变更](#42-示例创建-ai-infrastructure-cmdb-核心变更)
@@ -73,7 +74,7 @@
       - [8.3.3 不好的场景示例](#833-不好的场景示例)
     - [8.4 迭代开发最佳实践](#84-迭代开发最佳实践)
     - [8.5 与 AI 协作最佳实践](#85-与-ai-协作最佳实践)
-      - [8.5.1 Slash Commands (推荐)](#851-slash-commands-推荐)
+      - [8.5.1 OPSX 断杉命令（推荐）](#851-opsx-断杉命令推荐)
       - [8.5.2 与 AI 协作的技巧](#852-与-ai-协作的技巧)
     - [8.6 团队协作最佳实践](#86-团队协作最佳实践)
       - [8.6.1 代码审查清单](#861-代码审查清单)
@@ -188,7 +189,7 @@ openspec --help
 安装成功后，你将看到类似输出：
 
 ```bash
-OpenSpec v0.x.x
+OpenSpec v1.2.0
 Spec-Driven Development for AI Coding Assistants
 ```
 
@@ -244,31 +245,79 @@ openspec init --tools claude,cursor
 
 ```text
 your-project/
-├── .openspec/                    # OpenSpec 内部配置目录（自动生成）
 ├── openspec/                     # OpenSpec 工作目录
-│   ├── AGENTS.md                 # AI 代理指导文件（告诉 AI 如何使用 OpenSpec）
-│   ├── project.md                # 项目上下文（项目背景、技术栈等）
+│   ├── config.yaml               # 项目配置（技术栈、约定规则等，注入 AI 请求）
 │   ├── changes/                  # 变更提案目录（每个功能/变更一个文件夹）
 │   └── specs/                    # 主规范目录（已归档的规范）
+├── .qoder/                       # Qoder 专属目录（示例）
+│   ├── commands/opsx/            # /opsx 斜杠命令（供 IDE 直接调用）
+│   │   ├── propose.md
+│   │   ├── explore.md
+│   │   ├── apply.md
+│   │   └── archive.md
+│   └── skills/                   # Agent Skills（AI 自动检测并加载）
+│       ├── openspec-propose/SKILL.md
+│       ├── openspec-explore/SKILL.md
+│       ├── openspec-apply-change/SKILL.md
+│       └── openspec-archive-change/SKILL.md
 └── ... (项目其他文件)
 ```
 
+> **注意**：`openspec init` 会根据你选择的 AI 工具，在对应目录生成命令和 Skills 文件。例如，选择 Claude Code 则生成 `.claude/commands/opsx/` 和 `.claude/skills/`，选择 Qoder 则生成 `.qoder/commands/opsx/` 和 `.qoder/skills/`。
+
 ### 3.5 各文件说明
 
-| 文件/目录    | 用途                             | 是否必需 |
-| ------------ | -------------------------------- | -------- |
-| `AGENTS.md`  | 指导 AI 如何遵循 OpenSpec 工作流 | 推荐保留 |
-| `project.md` | 项目背景、技术栈、约束条件       | 推荐填写 |
-| `changes/`   | 存放活跃的变更提案               | 必需     |
-| `specs/`     | 存放已归档的规范                 | 可选     |
+| 文件/目录     | 用途                                           | 是否必需 |
+| ------------- | ---------------------------------------------- | -------- |
+| `config.yaml` | 项目背景、技术栈、约束条件、每类文档的规则注入 | 推荐填写 |
+| `changes/`    | 存放活跃的变更提案                             | 必需     |
+| `specs/`      | 存放已归档的规范                               | 可选     |
+
+> **与旧版的区别**：v1.0.0 起，`openspec/AGENTS.md` 和 `openspec/project.md` 已移除。项目上下文统一写入 `openspec/config.yaml` 的 `context:` 字段，该字段会被注入到每一次 AI 规划请求中，比旧方式更可靠。
+
+#### config.yaml 结构示例
+
+```yaml
+schema: spec-driven
+
+context: |
+  Tech stack: TypeScript, React, Node.js
+  Testing: Jest with React Testing Library
+  API: RESTful, documented in docs/api.md
+  We maintain backwards compatibility for all public APIs
+
+rules:
+  proposal:
+    - Include rollback plan for risky changes
+  specs:
+    - Use Given/When/Then format for scenarios
+  design:
+    - Include sequence diagrams for complex flows
+  tasks:
+    - Break tasks into max 2-hour chunks
+```
 
 ---
 
 ## 4. 创建变更提案
 
-在 OpenSpec 中，所有的功能开发、Bug 修复、架构变更都以"变更提案（Change）"为单位进行管理。
+在 OpenSpec 中，所有的功能开发、Bug 修复、架构变更都以“变更提案（Change）”为单位进行管理。
 
 ### 4.1 创建新变更
+
+**方式一：使用断杉命令（推荐，一步完成）**:
+
+```text
+/opsx:propose <description>
+```
+
+这个命令会：
+
+1. 推断起一个 kebab-case 变更名（如 `add-user-auth`）
+2. 创建 `openspec/changes/<name>/`
+3. 依次生成 `proposal.md`、`design.md`、`specs/`、`tasks.md` 所有文档
+
+**方式二：使用 CLI**:
 
 ```bash
 openspec new change <change-name>
@@ -336,14 +385,14 @@ openspec/changes/<change-name>/
 ### 4.5 变更的生命周期
 
 ```text
-创建 (new) → 编写规范 → 验证 (validate) → 实现 → 归档 (archive)
+提案 (断杉/CLI) → 编写规范 → 验证 (validate) → 实现 (apply) → 归档 (archive)
 ```
 
-1. **创建**：`openspec new change <name>`
+1. **提案**：`/opsx:propose <description>` 或 `openspec new change <name>`
 2. **编写规范**：编辑 proposal.md 和 specs/
 3. **验证**：`openspec validate <name>`
-4. **实现**：按照 tasks.md 执行开发
-5. **归档**：`openspec archive <name>`
+4. **实现**：`/opsx:apply` 按照 tasks.md 执行开发
+5. **归档**：`/opsx:archive` 完成并归档
 
 ---
 
@@ -775,16 +824,17 @@ Artifacts:
 
 ### 7.1 初始化与创建
 
-| 命令                         | 说明                 | 示例                            |
-| ---------------------------- | -------------------- | ------------------------------- |
-| `openspec init`              | 初始化 OpenSpec 项目 | `openspec init --tools none`    |
-| `openspec new change <name>` | 创建新变更提案       | `openspec new change user-auth` |
+| 命令                         | 说明                   | 示例                            |
+| ---------------------------- | ---------------------- | ------------------------------- |
+| `openspec init`              | 初始化 OpenSpec 项目   | `openspec init --tools none`    |
+| `openspec update`            | 更新 AI 技能和命令文件 | `openspec update`               |
+| `openspec new change <name>` | 创建新变更提案         | `openspec new change user-auth` |
 
 ### 7.2 查看与验证
 
 | 命令                              | 说明                  | 示例                                 |
 | --------------------------------- | --------------------- | ------------------------------------ |
-| `openspec view`                   | 打开交互式 Web 仪表盘 | `openspec view`                      |
+| `openspec view`                   | 打开交互式 Web 仔表盘 | `openspec view`                      |
 | `openspec status --change <name>` | 查看变更状态          | `openspec status --change user-auth` |
 | `openspec validate <name>`        | 验证变更文档格式      | `openspec validate user-auth`        |
 | `openspec list --changes`         | 列出所有变更          | `openspec list --changes`            |
@@ -800,12 +850,14 @@ Artifacts:
 
 ### 7.4 配置与调试
 
-| 命令                        | 说明             | 示例                                                  |
-| --------------------------- | ---------------- | ----------------------------------------------------- |
-| `openspec config`           | 查看和修改配置   | `openspec config`                                     |
-| `openspec change show <id>` | 查看变更解析结果 | `openspec change show user-auth --json --deltas-only` |
-| `openspec --version`        | 查看版本号       | `openspec --version`                                  |
-| `openspec --help`           | 查看帮助信息     | `openspec --help`                                     |
+| 命令                        | 说明               | 示例                                                  |
+| --------------------------- | ------------------ | ----------------------------------------------------- |
+| `openspec config list`      | 查看当前配置       | `openspec config list`                                |
+| `openspec config profile`   | 设置工作流 Profile | `openspec config profile`                             |
+| `openspec schemas`          | 列出可用 Schema    | `openspec schemas`                                    |
+| `openspec change show <id>` | 查看变更解析结果   | `openspec change show user-auth --json --deltas-only` |
+| `openspec --version`        | 查看版本号         | `openspec --version`                                  |
+| `openspec --help`           | 查看帮助信息       | `openspec --help`                                     |
 
 ### 7.5 全局选项
 
@@ -838,6 +890,9 @@ openspec status --change <name>
 
 # 归档变更
 openspec archive <name>
+
+# 更新工具文件
+openspec update
 ```
 
 ---
@@ -965,24 +1020,43 @@ Then 成功
 
 ### 8.5 与 AI 协作最佳实践
 
-#### 8.5.1 Slash Commands (推荐)
+#### 8.5.1 OPSX 断杉命令（推荐）
 
-OpenSpec 专为 AI 协作设计，通过标准化的 Slash Commands 可以极大提升开发效率。在支持 Slash Commands 的 AI 助手（如 Cursor, Windsurf, Claude Code）中，可以直接使用以下命令：
+OpenSpec 1.0+ 引入了全新的 OPSX 工作流，替换了旧版的阶段锁定模式。所有命令均通过 `openspec init` 安装到 AI 工具对应目录。
 
-| 命令                          | 作用               | 对应 CLI 操作                 |
-| :---------------------------- | :----------------- | :---------------------------- |
-| `/opsx:propose <description>` | 提出变更并生成规范 | `openspec new change ...`     |
-| `/opsx:apply`                 | 根据规范实现代码   | `openspec apply` (需配合插件) |
-| `/opsx:archive`               | 完成并归档变更     | `openspec archive ...`        |
+**默认 Core 配置（常用 4 个命令）**:
 
-> **注意**：旧版本可能使用 `/openspec:` 前缀，建议迁移到 `/opsx:` 以获得最新特性支持。
+| 命令                          | 作用                                                          |
+| :---------------------------- | :------------------------------------------------------------ |
+| `/opsx:propose <description>` | 一步创建变更并生成所有规划文档（proposal/design/specs/tasks） |
+| `/opsx:explore`               | 进入探索模式，思考问题、调查代码库，不写代码                  |
+| `/opsx:apply`                 | 按照 tasks.md 实现任务                                        |
+| `/opsx:archive`               | 完成并归档当前变更                                            |
+
+**扩展工作流命令（通过 `openspec config profile` 开启）**
+
+| 命令                 | 作用                                 |
+| :------------------- | :----------------------------------- |
+| `/opsx:new`          | 仅内核化变更目录，不创建文档         |
+| `/opsx:continue`     | 按依赖顺序创建下一个文档（逐步模式） |
+| `/opsx:ff`           | 快进生成所有规划文档（一步到位）     |
+| `/opsx:verify`       | 验证实现是否与规范一致               |
+| `/opsx:sync`         | 将 Delta Spec 合并到主规范（不归档） |
+| `/opsx:bulk-archive` | 批量归档多个已完成的变更             |
+| `/opsx:onboard`      | 带教 15 分钟全流程引导，适合新手上手 |
+
+> **迁移说明**：旧版命令（`/openspec:proposal`、`/openspec:apply`、`/openspec:archive`）已在 v1.0.0 移除。修复映射关系：
+>
+> - `/openspec:proposal` → `/opsx:propose`
+> - `/openspec:apply` → `/opsx:apply`
+> - `/openspec:archive` → `/opsx:archive`
 
 #### 8.5.2 与 AI 协作的技巧
 
-1. **先让 AI 阅读规范**：在实现前，让 AI 先阅读 proposal.md 和 specs/
-2. **使用具体引用**：让 AI 关注特定章节，如"请根据 specs/auth/spec.md 实现登录功能"
-3. **增量迭代**：完成一个需求后验证，再进行下一个
-4. **保持上下文清洁**：定期归档已完成的变更
+1. **先探索后提案**：不确定时先用 `/opsx:explore` 思考，明确后再 `/opsx:propose`
+2. **支持流动迭代**：实现过程发现设计错误？直接编辑对应文档即可，无阶段锁定
+3. **常清理上下文**：第一次实现之前建议清空对话上下文，保持高质量指令注入
+4. **增量迭代**：完成一个需求后验证，再进行下一个
 
 ### 8.6 团队协作最佳实践
 
@@ -1062,9 +1136,10 @@ echo 'export OPENSPEC_TELEMETRY=0' >> ~/.bashrc # Bash
 
 #### 9.3.3 Q3：规范写完后，AI 不遵循怎么办？
 
-1. 确保 `openspec/AGENTS.md` 文件存在
-2. 在对话开始时明确指出：`请遵循 openspec/changes/<name>/ 目录下的规范文档`
-3. 使用 OpenSpec 提供的 slash commands（如 `/opsx:apply`）
+1. 运行 `openspec update` 刷新 Skills 和命令文件
+2. 重启 IDE 使断杉命令生效
+3. 在 `openspec/config.yaml` 的 `rules:` 字段添加具体约束条件
+4. 使用 `/opsx:apply` 让 AI 从任务清单开始实现，而不是直接要求写代码
 
 #### 9.3.4 Q4：多个变更可以同时进行吗？
 
@@ -1084,6 +1159,6 @@ echo 'export OPENSPEC_TELEMETRY=0' >> ~/.bashrc # Bash
 
 ---
 
-_文档版本: 1.5_
-_最后更新: 2026-03-16_
-_基于 AI Infrastructure CMDB 项目实践经验编写_
+_文档版本: 2.0_
+_最后更新: 2026-04-09_
+_基于 OpenSpec v1.2.0 更新（OPSX 工作流、config.yaml、新命令体系）_

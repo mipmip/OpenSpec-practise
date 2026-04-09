@@ -56,11 +56,32 @@ CLI (`openspec`) 适合人类开发者进行管理操作：
 
 #### 2.3.2 AI 协作指令 (Slash Commands)
 
-在支持的 AI 编辑器（如 Cursor, Claude Code）中，推荐使用 Slash Commands 驱动开发：
+OpenSpec 1.0+ 引入了 OPSX 工作流，实现了**动态指令体系**——AI 不再接收静态指令，而是主动查询 CLI 了解当前项目状态和文档依赖。
 
-- **提出变更 (`/opsx:propose`)**：快速创建变更提案。
-- **实现变更 (`/opsx:apply`)**：根据规范自动编写代码。
-- **归档变更 (`/opsx:archive`)**：完成并归档当前工作。
+在支持的 AI 编辑器（如 Cursor、Claude Code、Qoder、Windsurf 等 20+ 工具）中，推荐使用断杉命令驱动开发：
+
+**默认 Core 配置**
+
+| 命令                          | 作用                                                          |
+| :---------------------------- | :------------------------------------------------------------ |
+| `/opsx:propose <description>` | 一步创建变更并生成所有规划文档（proposal/design/specs/tasks） |
+| `/opsx:explore`               | 进入探索模式，思考问题、调查代码库，不写代码                  |
+| `/opsx:apply`                 | 按照 tasks.md 实现任务，动态读取当前变更上下文                |
+| `/opsx:archive`               | 完成并归档当前变更，提示是否同步 Delta Spec 到主规范          |
+
+**扩展工作流命令**（通过 `openspec config profile` 开启）
+
+| 命令                 | 作用                                 |
+| :------------------- | :----------------------------------- |
+| `/opsx:new`          | 仅内核化变更目录                     |
+| `/opsx:continue`     | 按依赖顺序创建下一个文档（逐步模式） |
+| `/opsx:ff`           | 快进生成所有规划文档（一步到位）     |
+| `/opsx:verify`       | 验证实现是否与规范一致               |
+| `/opsx:sync`         | 将 Delta Spec 合并到主规范（不归档） |
+| `/opsx:bulk-archive` | 批量归档多个已完成的变更             |
+| `/opsx:onboard`      | 15 分钟全流程引导                    |
+
+OPSX 工作流与旧版的最大区别在于：**动作而非阶段**。可以在任意时刻编辑任意文档，不存在阶段锁定。
 
 ### 2.4 验证与可观测性
 
