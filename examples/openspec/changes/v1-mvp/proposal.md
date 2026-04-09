@@ -32,11 +32,33 @@
 
 ### New Capabilities
 
-- **Catalog**: 商品列表查询与上架。
-- **Cart**: 购物车管理（添加、移除）。
-- **Order**: 下单结算、库存扣减。
-- **Payment**: 订单支付模拟。
+- **Catalog**: 商品列表查询与上架，库存管理。
+- **Cart**: 购物车管理（添加、移除、数量限制）。
+- **Order**: 下单结算、库存扣减、订单查询。
+- **Payment**: 订单支付模拟与状态流转。
 - **Infrastructure**: 内存存储（MVP）、文件持久化（生产扩展）。
+
+## Capabilities
+
+### New Capabilities
+
+- `catalog-management`: 商品列表查询、商品上架与库存扣减管理
+- `cart-management`: 购物车商品添加、移除与数量限制
+- `order-management`: 订单创建（协调购物车与库存）、订单查询与总价计算
+- `payment`: 订单支付与状态流转（PENDING_PAYMENT -> PAID）
+- `domain-model`: 核心业务实体定义（Product, User, Cart, Order, CartItem, OrderItem）
+- `error-handling`: 统一错误响应格式与标准错误码体系
+
+### Modified Capabilities
+
+（无，本次为全新 MVP 项目）
+
+## Impact
+
+- **受影响代码**: `ecommerce-mini/src/` (Node.js), `ecommerce-mini-python/src/` (Python)
+- **新增 API**: 8 个 REST 端点（GET /api/products, POST /api/products, POST /api/cart/items, DELETE /api/cart/items/:id, POST /api/orders, GET /api/orders/:id, POST /api/payments/:orderId, GET /metrics）
+- **依赖**: Node.js 零 npm 依赖；Python 依赖 FastAPI + Pydantic
+- **数据存储**: 开发环境使用内存 Map，生产环境使用文件持久化
 
 ## Scope
 

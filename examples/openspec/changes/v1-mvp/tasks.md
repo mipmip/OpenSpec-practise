@@ -1,29 +1,39 @@
 # Implementation Tasks
 
-## Phase 1: Domain & Core Logic
+## 1. Domain Model & Core Logic
 
-- [x] Define Types (`src/domain/types.ts`)
-- [x] Implement Catalog Service (In-memory data)
-- [x] Implement Cart Service logic
-- [x] Implement Order Service (Calculation & Validation)
+- [x] 1.1 Define domain types: Product, User, Cart, CartItem, Order, OrderItem (Node.js & Python)
+- [x] 1.2 Implement calculateTotal utility function (Node.js & Python)
+- [x] 1.3 Implement CatalogService: list, getProduct, addProduct, deductStock (Node.js & Python)
+- [x] 1.4 Implement CartService: getCart, addToCart, clearCart with quantity limit (Node.js & Python)
+- [x] 1.5 Implement OrderService: createOrder with cart -> stock -> order orchestration (Node.js & Python)
 
-## Phase 2: HTTP Layer
+## 2. Repository Layer
 
-- [x] Setup Node.js HTTP Server (`src/http/server.js`)
-- [x] Implement Body Parser helper
-- [x] Implement Route: `GET /products`
-- [x] Implement Route: `POST /cart/items`
-- [x] Implement Route: `POST /orders`
+- [x] 2.1 Implement in-memory MemoryRepo for Product, Cart, Order (Node.js & Python)
+- [x] 2.2 Implement FileStore for file-based JSON persistence (Node.js)
 
-## Phase 3: Verification
+## 3. HTTP Layer
 
-- [x] Unit Tests for Domain logic
-- [x] Smoke Test Script (`smoke-test.js`)
-- [x] Performance Baseline Script (`perf-baseline.js`)
+- [x] 3.1 Setup HTTP server with JSON body parser (Node.js: native http, Python: FastAPI)
+- [x] 3.2 Implement route: GET /api/products (Node.js & Python)
+- [x] 3.3 Implement route: POST /api/products (Node.js & Python)
+- [x] 3.4 Implement route: POST /api/cart/items (Node.js & Python)
+- [x] 3.5 Implement route: DELETE /api/cart/items/:id (Node.js & Python)
+- [x] 3.6 Implement route: POST /api/orders (Node.js & Python)
+- [x] 3.7 Implement route: GET /api/orders/:id (Node.js & Python)
+- [x] 3.8 Implement route: POST /api/payments/:orderId (Node.js & Python)
+- [x] 3.9 Implement unified error response handler with { code, message } format (Node.js & Python)
 
-## Phase 4: Production Extensions (v2)
+## 4. Verification
 
-- [x] File Persistence (`src/persist/fileStore.js`)
-- [x] Authentication Middleware (`src/http/server.prod.js`)
-- [x] Idempotency Check
-- [x] Metrics Endpoint
+- [x] 4.1 Unit tests for domain logic: calculateTotal, stock deduction (Node.js)
+- [x] 4.2 Integration smoke test: full purchase flow (add product -> add to cart -> create order) (Node.js & Python)
+- [x] 4.3 Performance baseline test: p99 latency check against SLO (Node.js)
+
+## 5. Production Extensions
+
+- [x] 5.1 File persistence adapter wrapping FileStore for products, carts, orders (Node.js)
+- [x] 5.2 JWT authentication middleware with HMAC-SHA256 signing (Node.js)
+- [x] 5.3 Idempotency check for order creation via Idempotency-Key header (Node.js)
+- [x] 5.4 Metrics endpoint: GET /metrics returning request count and p99 latency (Node.js)
