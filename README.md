@@ -16,6 +16,8 @@
 
   > "OpenSpec 是一个**规范驱动开发（Spec-Driven Development, SDD）框架**，专为 AI 编程助手设计。它通过在编写代码之前先定义规范，确保人与 AI 对需求达成一致。" —— _OpenSpec 使用手册_
 
+  配套幻灯片：[旧版 PPT](docs/openspec-user-manual-v1.pptx) · [当前版 PPT](docs/openspec-user-manual-v2.pptx)
+
 - **[OpenSpec 实战指南](docs/openspec-practical-guide.md)**: OpenSpec 的具体落地实践指南。
 
   > "OpenSpec 不仅仅是一套文档格式，更是一种 **Spec 驱动开发 (Spec-Driven Development)** 的工程实践。它主张'以规格为源'，确保代码与测试始终与设计保持一致。" —— _OpenSpec 实战指南_

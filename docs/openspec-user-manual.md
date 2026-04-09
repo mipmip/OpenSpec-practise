@@ -1225,12 +1225,14 @@ echo 'export OPENSPEC_TELEMETRY=0' >> ~/.bashrc # Bash
 
 ### 9.4 参考链接
 
-| 资源     | 链接                                                    |
-| -------- | ------------------------------------------------------- |
-| 官方仓库 | <https://github.com/Fission-AI/OpenSpec>                |
-| 快速入门 | <https://openspec.pro/getting-started/>                 |
-| 官方文档 | <https://github.com/Fission-AI/OpenSpec/tree/main/docs> |
-| npm 包   | <https://www.npmjs.com/package/@fission-ai/openspec>    |
+| 资源                 | 链接                                                           |
+| -------------------- | -------------------------------------------------------------- |
+| 官方仓库             | <https://github.com/Fission-AI/OpenSpec>                       |
+| 快速入门             | <https://openspec.pro/getting-started/>                        |
+| 官方文档             | <https://github.com/Fission-AI/OpenSpec/tree/main/docs>        |
+| npm 包               | <https://www.npmjs.com/package/@fission-ai/openspec>           |
+| 配套幻灯片（旧版）   | [openspec-user-manual-v1.pptx](./openspec-user-manual-v1.pptx) |
+| 配套幻灯片（当前版） | [openspec-user-manual-v2.pptx](./openspec-user-manual-v2.pptx) |
 
 ---
 
