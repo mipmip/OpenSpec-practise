@@ -90,7 +90,7 @@
 - **多语言实现**: 使用相同的规范驱动 Node.js 和 Python 两套实现。
 - **完整测试覆盖**: 单元测试、集成测试、性能测试。
 - **生产级扩展**: 持久化存储、鉴权、幂等性、可观测性。
-- **AI 深度协作**: 通过 `openspec init` 生成 OPSX 斜杠命令（`/opsx:propose`、`/opsx:apply` 等），支持与 20+ AI 编程助手的标准化协作工作流。
+- **AI 深度协作**: 通过 `openspec init` 生成 OPSX 斜杠命令（`/opsx:propose`、`/opsx:apply` 等），支持与 20+ AI 编程助手（如 Cursor、Claude Code、Junie、Lingma 等）的标准化协作工作流。
 
 ---
 

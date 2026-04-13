@@ -14,6 +14,7 @@
     - [2.1 前置要求](#21-前置要求)
     - [2.2 安装命令](#22-安装命令)
     - [2.3 验证安装](#23-验证安装)
+    - [2.4 配置 Shell 自动补全（可选）](#24-配置-shell-自动补全可选)
   - [3. 项目初始化](#3-项目初始化)
     - [3.1 初始化命令](#31-初始化命令)
     - [3.2 交互式配置](#32-交互式配置)
@@ -135,7 +136,7 @@ OpenSpec 是一个**规范驱动开发（Spec-Driven Development, SDD）框架**
    - 没有僵化的阶段门槛
 
 4. **工具兼容**
-   - 支持 20+ AI 编程助手（Claude Code、Cursor、GitHub Copilot 等）
+   - 支持 20+ AI 编程助手（Claude Code、Cursor、Junie、Lingma IDE 等）
 
 ---
 
@@ -188,7 +189,18 @@ openspec --help
 安装成功后，你将看到类似输出：
 
 ```bash
-1.2.0
+1.3.0
+```
+
+### 2.4 配置 Shell 自动补全（可选）
+
+自 v1.3.0 起，为了避免在某些终端（如 PowerShell）中出现编码问题，Shell 自动补全功能改为**手动开启（Opt-in）**。
+
+如果你希望在终端中使用 `openspec` 的命令补全，可以运行以下命令生成并安装补全脚本（支持 bash、zsh、fish 等）：
+
+```bash
+# 查看补全命令帮助
+openspec completion --help
 ```
 
 ---
@@ -251,6 +263,10 @@ openspec init --tools qoder
 | Claude Code        | `claude`         |
 | Qoder              | `qoder`          |
 | Cursor             | `cursor`         |
+| JetBrains Junie    | `junie`          |
+| Lingma IDE         | `lingma`         |
+| ForgeCode          | `forgecode`      |
+| IBM Bob            | `bob`            |
 | GitHub Copilot     | `github-copilot` |
 | Cline              | `cline`          |
 | Windsurf           | `windsurf`       |
@@ -710,38 +726,22 @@ openspec validate <change-name>
 验证成功时显示：
 
 ```bash
-✓ Change '<change-name>' is valid
+Change '<change-name>' is valid
 ```
 
 验证失败时会显示具体错误信息。
 
 ### 6.2 常见错误及解决方案
 
-#### 6.2.1 错误 1：缺少必需章节
+#### 6.2.1 错误 1：未找到任何 Delta
 
 **错误信息**：
 
 ```bash
-✗ [ERROR] Change must have a Why section. Missing required sections.
-Expected headers: "## Why" and "## What Changes"
+✗ [ERROR] file: Change must have at least one delta. No deltas found. Ensure your change has a specs/ directory with capability folders (e.g. specs/http-server/spec.md) containing .md files that use delta headers (## ADDED/MODIFIED/REMOVED/RENAMED Requirements) and that each requirement includes at least one "#### Scenario:" block. Tip: run "openspec change show <change-id> --json --deltas-only" to inspect parsed deltas.
 ```
 
-**原因**：proposal.md 中缺少 `## Why` 或 `## What Changes` 章节。
-
-**解决方案**：确保 proposal.md 包含这两个章节（参考 [5.1.2 完整格式模板](#512-完整格式模板)）。
-
----
-
-#### 6.2.2 错误 2：未找到任何 Delta
-
-**错误信息**：
-
-```bash
-✗ [ERROR] file: Change must have at least one delta. No deltas found.
-Ensure your change has a specs/ directory with capability folders
-```
-
-**原因**：specs/ 目录结构不正确。
+**原因**：specs/ 目录结构不正确，或者缺少有效的 Delta Header。
 
 **解决方案**：
 
@@ -772,14 +772,12 @@ specs/
 
 ---
 
-#### 6.2.3 错误 3：需求条目解析失败
+#### 6.2.2 错误 2：需求条目解析失败
 
 **错误信息**：
 
 ```bash
-✗ [ERROR] Delta sections ## ADDED Requirements were found,
-but no requirement entries parsed. Ensure each section includes
-at least one "### Requirement:" block
+✗ [ERROR] cap1/spec.md: Delta sections ## ADDED Requirements were found, but no requirement entries parsed. Ensure each section includes at least one "### Requirement:" block (REMOVED may use bullet list syntax).
 ```
 
 **原因**：需求标题格式不正确。
@@ -806,12 +804,12 @@ at least one "### Requirement:" block
 
 ---
 
-#### 6.2.4 错误 4：缺少场景块
+#### 6.2.3 错误 3：缺少场景块
 
 **错误信息**：
 
 ```bash
-✗ [ERROR] Each requirement MUST include at least one #### Scenario: block
+✗ [ERROR] cap1/spec.md: ADDED "test" must include at least one scenario
 ```
 
 **原因**：每个需求必须至少有一个场景。
@@ -862,18 +860,19 @@ openspec show <change-name> --json --deltas-only
 openspec status --change <change-name>
 ```
 
+> **提示**：自 v1.3.0 起，如果当前不存在任何变更，`openspec status` 命令会优雅地退出（提示无变更），而不再抛出致命错误。
+
 输出示例：
 
 ```bash
 Change: ai-infra-cmdb-core
-Status: active
-Artifacts:
-  ✓ proposal.md - Valid
-  ✓ design.md - Present
-  ✓ tasks.md - Present
-  ✓ specs/accelerator-management/spec.md - Valid (2 requirements, 3 scenarios)
-  ✓ specs/training-job-lifecycle/spec.md - Valid (2 requirements, 4 scenarios)
-  ✗ specs/inference-service/spec.md - Invalid (missing scenarios)
+Schema: spec-driven
+Progress: 1/4 artifacts complete
+
+[x] proposal
+[ ] design
+[ ] specs
+[-] tasks (blocked by: design, specs)
 ```
 
 #### 6.3.3 验证检查清单
@@ -1164,6 +1163,10 @@ OpenSpec 支持 20+ AI 编程助手，以下是常用工具：
 | **Claude Code**        | CLI + IDE    | 完全支持                                                |
 | **Qoder**              | IDE          | 完全支持                                                |
 | **Cursor**             | IDE          | 完全支持                                                |
+| **JetBrains Junie**    | IDE 插件     | 完全支持                                                |
+| **Lingma IDE**         | IDE 插件     | 完全支持                                                |
+| **ForgeCode**          | IDE 插件     | 完全支持                                                |
+| **IBM Bob**            | IDE 插件     | 完全支持                                                |
 | **GitHub Copilot**     | IDE 插件     | 完全支持                                                |
 | **Cline**              | VS Code 插件 | 完全支持                                                |
 | **Windsurf**           | IDE          | 完全支持                                                |
@@ -1236,6 +1239,6 @@ echo 'export OPENSPEC_TELEMETRY=0' >> ~/.bashrc # Bash
 
 ---
 
-_文档版本: 2.0_
-_最后更新: 2026-04-09_
-_基于 OpenSpec v1.2.0 更新（OPSX 工作流、config.yaml、新命令体系）_
+_文档版本: 2.1_
+_最后更新: 2026-04-13_
+_基于 OpenSpec v1.3.0 更新（支持新 IDE、Shell completions 优化等）_

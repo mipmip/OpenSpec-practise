@@ -64,7 +64,7 @@ CLI (`openspec`) 适合人类开发者进行管理操作：
 
 OpenSpec 1.0+ 引入了 OPSX 工作流，实现了**动态指令体系**——AI 不再接收静态指令，而是主动查询 CLI 了解当前项目状态和文档依赖。
 
-在支持的 AI 编辑器（如 Cursor、Claude Code、Qoder、Windsurf 等 20+ 工具）中，推荐使用斜杠命令（Slash Commands）驱动开发：
+在支持的 AI 编辑器（如 Cursor、Claude Code、Qoder、Windsurf、Junie、Lingma IDE、ForgeCode 等 20+ 工具）中，推荐使用斜杠命令（Slash Commands）驱动开发：
 
 **默认 Core 配置**：
 
@@ -242,7 +242,7 @@ openspec validate v1-mvp
 openspec validate v1-mvp
 
 # 验证成功输出
-✓ Change 'v1-mvp' is valid
+Change 'v1-mvp' is valid
 ```
 
 > **注意**：验证命令会检查 Proposal 章节完整性、目录结构、Delta Header 格式以及 Scenario 覆盖率。详细的验证规则与错误排查请参考 [OpenSpec 使用手册 - 6. 验证与常见错误](./openspec-user-manual.md#6-验证与常见错误)。
