@@ -14,6 +14,7 @@ Based on practical project experience.
     - [2.1 Prerequisites](#21-prerequisites)
     - [2.2 Installation Commands](#22-installation-commands)
     - [2.3 Verify Installation](#23-verify-installation)
+    - [2.4 Configure Shell Auto-Completion (Optional)](#24-configure-shell-auto-completion-optional)
   - [3. Project Initialization](#3-project-initialization)
     - [3.1 Init Command](#31-init-command)
     - [3.2 Interactive Configuration](#32-interactive-configuration)
@@ -135,7 +136,7 @@ The advantages of this approach are:
    - No rigid phase gates
 
 4. **Tool compatibility**
-   - Supports 20+ AI coding assistants (Claude Code, Cursor, GitHub Copilot, etc.)
+   - Supports 20+ AI coding assistants (Claude Code, Cursor, Junie, Lingma IDE, etc.)
 
 ---
 
@@ -188,7 +189,18 @@ openspec --help
 After successful installation, you will see output similar to:
 
 ```bash
-1.2.0
+1.3.0
+```
+
+### 2.4 Configure Shell Auto-Completion (Optional)
+
+Since v1.3.0, to avoid encoding issues in certain terminals (such as PowerShell), Shell auto-completion has been changed to **opt-in**.
+
+If you want to use `openspec` command completion in your terminal, you can run the following command to generate and install the completion script (supports bash, zsh, fish, etc.):
+
+```bash
+# View completion command help
+openspec completion --help
 ```
 
 ---
@@ -251,6 +263,10 @@ openspec init --tools qoder
 | Claude Code        | `claude`         |
 | Qoder              | `qoder`          |
 | Cursor             | `cursor`         |
+| JetBrains Junie    | `junie`          |
+| Lingma IDE         | `lingma`         |
+| ForgeCode          | `forgecode`      |
+| IBM Bob            | `bob`            |
 | GitHub Copilot     | `github-copilot` |
 | Cline              | `cline`          |
 | Windsurf           | `windsurf`       |
@@ -710,29 +726,14 @@ openspec validate <change-name>
 On success:
 
 ```bash
-✓ Change '<change-name>' is valid
+Change '<change-name>' is valid
 ```
 
 On failure, specific error messages will be displayed.
 
 ### 6.2 Common Errors and Solutions
 
-#### 6.2.1 Error 1: Missing Required Sections
-
-**Error message**:
-
-```bash
-✗ [ERROR] Change must have a Why section. Missing required sections.
-Expected headers: "## Why" and "## What Changes"
-```
-
-**Cause**: proposal.md is missing the `## Why` or `## What Changes` section.
-
-**Solution**: Ensure proposal.md contains both sections (see [5.1.2 Full Format Template](#512-full-format-template)).
-
----
-
-#### 6.2.2 Error 2: No Deltas Found
+#### 6.2.1 Error 1: No Deltas Found
 
 **Error message**:
 
@@ -772,14 +773,12 @@ specs/
 
 ---
 
-#### 6.2.3 Error 3: Requirement Entry Parsing Failed
+#### 6.2.2 Error 2: Requirement Entry Parsing Failed
 
 **Error message**:
 
 ```bash
-✗ [ERROR] Delta sections ## ADDED Requirements were found,
-but no requirement entries parsed. Ensure each section includes
-at least one "### Requirement:" block
+✗ [ERROR] cap1/spec.md: Delta sections ## ADDED Requirements were found, but no requirement entries parsed. Ensure each section includes at least one "### Requirement:" block (REMOVED may use bullet list syntax).
 ```
 
 **Cause**: The requirement heading format is incorrect.
@@ -806,12 +805,12 @@ at least one "### Requirement:" block
 
 ---
 
-#### 6.2.4 Error 4: Missing Scenario Block
+#### 6.2.3 Error 3: Missing Scenario Block
 
 **Error message**:
 
 ```bash
-✗ [ERROR] Each requirement MUST include at least one #### Scenario: block
+✗ [ERROR] cap1/spec.md: ADDED "test" must include at least one scenario
 ```
 
 **Cause**: Every requirement must have at least one scenario.
@@ -862,18 +861,19 @@ This outputs the parsed result in JSON format, helping you understand how OpenSp
 openspec status --change <change-name>
 ```
 
+> **Tip**: Since v1.3.0, if no changes currently exist, the `openspec status` command will exit gracefully (with a "no changes" message) instead of throwing a fatal error.
+
 Example output:
 
 ```bash
 Change: ai-infra-cmdb-core
-Status: active
-Artifacts:
-  ✓ proposal.md - Valid
-  ✓ design.md - Present
-  ✓ tasks.md - Present
-  ✓ specs/accelerator-management/spec.md - Valid (2 requirements, 3 scenarios)
-  ✓ specs/training-job-lifecycle/spec.md - Valid (2 requirements, 4 scenarios)
-  ✗ specs/inference-service/spec.md - Invalid (missing scenarios)
+Schema: spec-driven
+Progress: 1/4 artifacts complete
+
+[x] proposal
+[ ] design
+[ ] specs
+[-] tasks (blocked by: design, specs)
 ```
 
 #### 6.3.3 Validation Checklist
@@ -1164,6 +1164,10 @@ OpenSpec supports 20+ AI coding assistants. The most common ones are:
 | **Claude Code**        | CLI + IDE    | Full support                                                          |
 | **Qoder**              | IDE          | Full support                                                          |
 | **Cursor**             | IDE          | Full support                                                          |
+| **JetBrains Junie**    | IDE plugin   | Full support                                                          |
+| **Lingma IDE**         | IDE plugin   | Full support                                                          |
+| **ForgeCode**          | IDE plugin   | Full support                                                          |
+| **IBM Bob**            | IDE plugin   | Full support                                                          |
 | **GitHub Copilot**     | IDE plugin   | Full support                                                          |
 | **Cline**              | VS Code plugin | Full support                                                        |
 | **Windsurf**           | IDE          | Full support                                                          |
@@ -1236,6 +1240,6 @@ Yes. Each change is an independent folder and can be developed in parallel. Howe
 
 ---
 
-_Document version: 2.0_
-_Last updated: 2026-04-09_
-_Based on OpenSpec v1.2.0 (OPSX workflow, config.yaml, new command system)_
+_Document version: 2.1_
+_Last updated: 2026-04-13_
+_Based on OpenSpec v1.3.0 (new IDE support, Shell completions optimization, etc.)_

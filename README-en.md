@@ -90,7 +90,7 @@ This project demonstrates the following core OpenSpec features:
 - **Multi-language Implementation**: Using the same specification to drive both Node.js and Python implementations.
 - **Comprehensive Test Coverage**: Unit tests, integration tests, and performance tests.
 - **Production-Grade Extensions**: Persistent storage, authentication, idempotency, and observability.
-- **Deep AI Collaboration**: Generate OPSX slash commands (`/opsx:propose`, `/opsx:apply`, etc.) via `openspec init`, supporting standardized collaborative workflows with 20+ AI programming assistants.
+- **Deep AI Collaboration**: Generate OPSX slash commands (`/opsx:propose`, `/opsx:apply`, etc.) via `openspec init`, supporting standardized collaborative workflows with 20+ AI programming assistants (such as Cursor, Claude Code, Junie, Lingma, etc.).
 
 ---
 

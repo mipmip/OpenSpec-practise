@@ -64,7 +64,7 @@ The CLI (`openspec`) is suited for management operations by human developers:
 
 OpenSpec 1.0+ introduced the OPSX workflow, implementing a **dynamic command system** — AI no longer receives static instructions but actively queries the CLI to understand the current project state and document dependencies.
 
-In supported AI editors (such as Cursor, Claude Code, Qoder, Windsurf, and 20+ other tools), it is recommended to drive development using Slash Commands:
+In supported AI editors (such as Cursor, Claude Code, Qoder, Windsurf, Junie, Lingma IDE, ForgeCode, and 20+ other tools), it is recommended to drive development using Slash Commands:
 
 **Default Core Configuration**:
 
@@ -242,7 +242,7 @@ This is the core of OpenSpec — **code is a mapping of the spec**.
 openspec validate v1-mvp
 
 # Successful validation output
-✓ Change 'v1-mvp' is valid
+Change 'v1-mvp' is valid
 ```
 
 > **Note**: The validate command checks Proposal section completeness, directory structure, Delta Header format, and Scenario coverage. For detailed validation rules and troubleshooting, see [OpenSpec User Manual - 6. Validation and Common Errors](./openspec-user-manual.md#6-validation-and-common-errors).
